@@ -1,14 +1,10 @@
 package one.yezii.peanut.core.bootloader;
 
-import one.yezii.peanut.core.ClassScanner;
-import one.yezii.peanut.core.annotation.Autowired;
-import one.yezii.peanut.core.annotation.Component;
 import one.yezii.peanut.core.annotation.PeanutBoot;
 import one.yezii.peanut.core.facade.PeanutRunner;
+import one.yezii.peanut.core.scan.ClassScanner;
+import one.yezii.peanut.core.scan.consumer.ComponentAnnotationScanResultConsumer;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -19,10 +15,10 @@ public class Peanut {
     private Set<PeanutRunner> runners = new HashSet<>();
     private Set<Object> components = new HashSet<>();
 
-    public static <T> void eat(Class<T> clazz) {
+    public static <T> void eat(Class<T> bootClass) {
         Peanut peanut = new Peanut();
         try {
-            peanut.getClasses(clazz);
+            peanut.getClasses(bootClass);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
@@ -31,25 +27,13 @@ public class Peanut {
         logger.info("Peanut Application started.");
     }
 
-    public <T> void getClasses(Class<T> bootClass) throws IOException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public <T> void getClasses(Class<T> bootClass) {
         if (!bootClass.isAnnotationPresent(PeanutBoot.class)) {
             logger.log(Level.SEVERE, "boot class " + bootClass.getName() + "without @PeanutBoot annotation");
             System.exit(-1);
         }
-        Set<Class<?>> classes = new ClassScanner().scan(bootClass.getPackageName());
-        for (Class<?> c : classes) {//todo
-            if (c.isAnnotationPresent(Component.class)) {
-                Object object = c.getConstructors()[0].newInstance();
-                for (Field field : c.getFields()) {
-                    if (field.isAnnotationPresent(Autowired.class)) {
-                        field.set(object, field.getType().getConstructors()[0].newInstance());
-                    }
-                }
-            }
-//            if (c.getAnnotation(Component.class) != null
-//                    && Arrays.asList(c.getInterfaces()).contains(PeanutRunner.class)) {
-//                runners.add((PeanutRunner) c.getConstructors()[0].newInstance());
-//            }
-        }
+        //todo
+        new ClassScanner().addScanResultConsumer(new ComponentAnnotationScanResultConsumer())
+                .scan(bootClass.getPackageName());
     }
 }

@@ -8,5 +8,29 @@
     <artifactId>peanut</artifactId>
     <version>0.0.1</version>
 
-
+    <properties>
+        <java.version>11</java.version>
+    </properties>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+        <!-- https://mvnrepository.com/artifact/io.github.classgraph/classgraph -->
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.71</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+                <version>3.8.1</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>
