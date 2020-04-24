@@ -1,7 +1,7 @@
 package one.yezii.peanut.core.bootloader;
 
 import one.yezii.peanut.core.annotation.PeanutBoot;
-import one.yezii.peanut.core.facade.PeanutRunner;
+import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.scan.ClassScanner;
 import one.yezii.peanut.core.scan.consumer.ComponentAnnotationScanResultConsumer;
 
@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 public class Peanut {
     private static Logger logger = Logger.getLogger(Peanut.class.toGenericString());
-    private Set<PeanutRunner> runners = new HashSet<>();
     private Set<Object> components = new HashSet<>();
 
     public static <T> void eat(Class<T> bootClass) {
@@ -23,8 +22,8 @@ public class Peanut {
             e.printStackTrace();
             System.exit(-1);
         }
-        peanut.runners.forEach(PeanutRunner::run);
         logger.info("Peanut Application started.");
+        GlobalContext.runners.forEach((k, v) -> v.run());
     }
 
     public <T> void getClasses(Class<T> bootClass) {
