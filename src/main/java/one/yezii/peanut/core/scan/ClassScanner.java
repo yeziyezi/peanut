@@ -4,22 +4,20 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ClassScanner {
-    private List<ClassScanResultConsumer> classScanResultConsumers = new ArrayList<>();
-
-    /*
-    the consumers add in list will consumer order by the index in list
-     */
-    public ClassScanner addScanResultConsumer(ClassScanResultConsumer consumer) {
-        classScanResultConsumers.add(consumer);
-        return this;
-    }
+    private List<ScanResultConsumer> scanResultConsumers = new ArrayList<>();
 
     public void scan(String pkg) {
         try (ScanResult scanResult = new ClassGraph().verbose(false).enableAllInfo().whitelistPackages(pkg).scan()) {
-            classScanResultConsumers.forEach(consumer -> consumer.consume(scanResult));
+            scanResultConsumers.forEach(s -> s.consume(scanResult));
         }
+    }
+
+    public ClassScanner addScanResultConsumer(ScanResultConsumer... consumers) {
+        scanResultConsumers.addAll(Arrays.asList(consumers));
+        return this;
     }
 }

@@ -3,16 +3,13 @@ package one.yezii.peanut.core.bootloader;
 import one.yezii.peanut.core.annotation.PeanutBoot;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.scan.ClassScanner;
-import one.yezii.peanut.core.scan.consumer.ComponentAnnotationScanResultConsumer;
+import one.yezii.peanut.core.scan.ScanResultConsumers;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Peanut {
     private static Logger logger = Logger.getLogger(Peanut.class.toGenericString());
-    private Set<Object> components = new HashSet<>();
 
     public static <T> void eat(Class<T> bootClass) {
         Peanut peanut = new Peanut();
@@ -28,11 +25,10 @@ public class Peanut {
 
     public <T> void getClasses(Class<T> bootClass) {
         if (!bootClass.isAnnotationPresent(PeanutBoot.class)) {
-            logger.log(Level.SEVERE, "boot class " + bootClass.getName() + "without @PeanutBoot annotation");
+            logger.log(Level.SEVERE, "boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
             System.exit(-1);
         }
-        //todo
-        new ClassScanner().addScanResultConsumer(new ComponentAnnotationScanResultConsumer())
+        new ClassScanner().addScanResultConsumer(ScanResultConsumers.commponentAnnotationScanResultConsumer())
                 .scan(bootClass.getPackageName());
     }
 }

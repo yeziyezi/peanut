@@ -7,6 +7,6 @@ import io.github.classgraph.ScanResult;
     ClassScanResultUser is "the consumer of classgraph scan result"
     the class which deal with class information should implement this.
  */
-public interface ClassScanResultConsumer {
+public interface ScanResultConsumer {
     void consume(ScanResult scanResult);
 }
