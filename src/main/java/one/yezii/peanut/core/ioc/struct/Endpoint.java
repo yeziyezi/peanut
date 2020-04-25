@@ -10,6 +10,14 @@ public class Endpoint {
     private List<Endpoint> nextList = new ArrayList<>();
     private List<Endpoint> prevList = new ArrayList<>();
 
+    public int getOutDegree() {
+        return outDegree;
+    }
+
+    public int getInDegree() {
+        return inDegree;
+    }
+
     public Endpoint addNext(Endpoint... endpoints) {
         outDegree += endpoints.length;
         nextList.addAll(Arrays.asList(endpoints));
