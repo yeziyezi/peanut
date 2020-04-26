@@ -1,4 +1,4 @@
-package one.yezii.peanut.core;
+package one.yezii.peanut.core.ioc;
 
 import io.github.classgraph.ClassInfo;
 

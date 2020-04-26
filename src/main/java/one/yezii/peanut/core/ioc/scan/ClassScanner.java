@@ -1,4 +1,4 @@
-package one.yezii.peanut.core.scan;
+package one.yezii.peanut.core.ioc.scan;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;

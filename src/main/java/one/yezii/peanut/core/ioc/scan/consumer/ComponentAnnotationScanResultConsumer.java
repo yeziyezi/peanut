@@ -1,17 +1,19 @@
-package one.yezii.peanut.core.scan.consumer;
+package one.yezii.peanut.core.ioc.scan.consumer;
 
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
-import one.yezii.peanut.core.BeanDependency;
 import one.yezii.peanut.core.constant.ClassName;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.facade.PeanutRunner;
-import one.yezii.peanut.core.scan.ScanResultConsumer;
+import one.yezii.peanut.core.ioc.BeanDependency;
+import one.yezii.peanut.core.ioc.DependencyEndpoint;
+import one.yezii.peanut.core.ioc.InjectOrderProducer;
+import one.yezii.peanut.core.ioc.scan.ScanResultConsumer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,37 +39,28 @@ public class ComponentAnnotationScanResultConsumer implements ScanResultConsumer
     }
 
     private Map<String, BeanDependency> injectBeans(Map<String, BeanDependency> dependencyMap) {
-        //todo add dependency cycle test
-        //todo add not found dependency test
-        HashMap<String, BeanDependency> done = new HashMap<>();
-        while (!dependencyMap.isEmpty()) {
-            List<String> removeList = new ArrayList<>();
-            for (Map.Entry<String, BeanDependency> entry : dependencyMap.entrySet()) {
-                String k = entry.getKey();
-                BeanDependency bd = entry.getValue();
-                try {
-                    if (bd.getDependencies().isEmpty()) {
-                        bd.setBean(bd.getClassInfo().loadClass().getConstructors()[0].newInstance());
-                        done.put(k, bd);
-                        removeList.add(k);
-                        continue;
-                    }
-                    if (done.keySet().containsAll(bd.getDependencies())) {
-                        Class<?> clazz = bd.getClassInfo().loadClass();
-                        Object bean = clazz.getConstructors()[0].newInstance();
-                        for (Field field : clazz.getDeclaredFields()) {
-                            field.setAccessible(true);
-                            field.set(bean, done.get(field.getType().getName()).getBean());
-                        }
-                        bd.setBean(bean);
-                        done.put(k, bd);
-                        removeList.add(k);
-                    }
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
+        InjectOrderProducer injectOrderProducer = new InjectOrderProducer();
+        injectOrderProducer.addEndPoints(dependencyMap.entrySet().stream()
+                .map(entry -> new DependencyEndpoint().setName(entry.getKey())
+                        .addNext(entry.getValue().getDependencies()))
+                .collect(Collectors.toList()));
+        Map<String, BeanDependency> done = new HashMap<>();
+        try {
+            for (String key : injectOrderProducer.getInjectOrder()) {
+                BeanDependency bd = dependencyMap.get(key);
+                Class<?> clazz = bd.getClassInfo().loadClass();
+                Object bean = clazz.getConstructors()[0].newInstance();
+                List<Field> autowiredFields = Arrays.stream(clazz.getDeclaredFields())
+                        .filter(field -> bd.getDependencies().contains(field.getType().getName()))
+                        .collect(Collectors.toList());
+                for (Field autowiredField : autowiredFields) {
+                    autowiredField.setAccessible(true);
+                    autowiredField.set(bean, done.get(autowiredField.getType().getName()).getBean());
                 }
+                done.put(key, bd.setBean(bean));
             }
-            removeList.forEach(dependencyMap::remove);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
         return done;
     }
