@@ -8,7 +8,7 @@ import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.facade.PeanutRunner;
 import one.yezii.peanut.core.ioc.BeanDependency;
 import one.yezii.peanut.core.ioc.DependencyEndpoint;
-import one.yezii.peanut.core.ioc.InjectOrderProducer;
+import one.yezii.peanut.core.ioc.DependencyForest;
 import one.yezii.peanut.core.ioc.scan.ScanResultConsumer;
 
 import java.lang.reflect.Field;
@@ -39,14 +39,14 @@ public class ComponentAnnotationScanResultConsumer implements ScanResultConsumer
     }
 
     private Map<String, BeanDependency> injectBeans(Map<String, BeanDependency> dependencyMap) {
-        InjectOrderProducer injectOrderProducer = new InjectOrderProducer();
-        injectOrderProducer.addEndPoints(dependencyMap.entrySet().stream()
+        List<DependencyEndpoint> endpoints = dependencyMap.entrySet().stream()
                 .map(entry -> new DependencyEndpoint().setName(entry.getKey())
                         .addNext(entry.getValue().getDependencies()))
-                .collect(Collectors.toList()));
-        Map<String, BeanDependency> done = new HashMap<>();
+                .collect(Collectors.toList());
+        List<String> injectOrders = new DependencyForest().addEndpoints(endpoints).getInjectOrders();
+        Map<String, BeanDependency> injectedMap = new HashMap<>();
         try {
-            for (String key : injectOrderProducer.getInjectOrder()) {
+            for (String key : injectOrders) {
                 BeanDependency bd = dependencyMap.get(key);
                 Class<?> clazz = bd.getClassInfo().loadClass();
                 Object bean = clazz.getConstructors()[0].newInstance();
@@ -55,14 +55,14 @@ public class ComponentAnnotationScanResultConsumer implements ScanResultConsumer
                         .collect(Collectors.toList());
                 for (Field autowiredField : autowiredFields) {
                     autowiredField.setAccessible(true);
-                    autowiredField.set(bean, done.get(autowiredField.getType().getName()).getBean());
+                    autowiredField.set(bean, injectedMap.get(autowiredField.getType().getName()).getBean());
                 }
-                done.put(key, bd.setBean(bean));
+                injectedMap.put(key, bd.setBean(bean));
             }
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        return done;
+        return injectedMap;
     }
 
     public void consume(ScanResult scanResult) {
