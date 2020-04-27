@@ -43,7 +43,7 @@ public class ComponentAnnotationScanResultConsumer implements ScanResultConsumer
                 .map(entry -> new DependencyEndpoint().setName(entry.getKey())
                         .addNext(entry.getValue().getDependencies()))
                 .collect(Collectors.toList());
-        List<String> injectOrders = new DependencyForest().addEndpoints(endpoints).getInjectOrders();
+        List<String> injectOrders = new DependencyForest().addEndpoints(endpoints).generate().getInjectOrders();
         Map<String, BeanDependency> injectedMap = new HashMap<>();
         try {
             for (String key : injectOrders) {
