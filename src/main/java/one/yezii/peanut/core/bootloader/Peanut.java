@@ -28,7 +28,9 @@ public class Peanut {
             logger.log(Level.SEVERE, "boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
             System.exit(-1);
         }
-        new ClassScanner().addScanResultConsumer(ScanResultConsumers.componentAnnotationScanResultConsumer())
-                .scan(bootClass.getPackageName());
+        new ClassScanner().addScanResultConsumer(
+                ScanResultConsumers.PrintAllComponentScanResultConsumer(),
+                ScanResultConsumers.ComponentAnnotationScanResultConsumer()
+        ).scan(bootClass.getPackageName());
     }
 }
