@@ -54,10 +54,11 @@ public class DependencyForest {
     }
 
     private void checkInvalidDependenciesAndThrow() {
-        DependencyForest forest = new DependencyForest().addEndpoints(endpoints);
+        List<String> invalidDependencies = endpoints.stream().map(DependencyEndpoint::getName)
+                .collect(Collectors.toList());
         for (DependencyEndpoint endpoint : endpoints) {
             for (String epName : endpoint.getNextListReadOnly()) {
-                if (!forest.forestContains(epName) && !this.forestContains(epName)) {
+                if (!invalidDependencies.contains(epName) && !this.forestContains(epName)) {
                     throw new RuntimeException("dependency not found in [" + endpoint.getName() + "->" + epName + "]");
                 }
             }
