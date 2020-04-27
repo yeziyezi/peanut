@@ -11,7 +11,7 @@ public class ClassScanner {
     private List<ScanResultConsumer> scanResultConsumers = new ArrayList<>();
 
     public void scan(String pkg) {
-        try (ScanResult scanResult = new ClassGraph().verbose(false).enableAllInfo().whitelistPackages(pkg).scan()) {
+        try (ScanResult scanResult = getScanResult(pkg)) {
             scanResultConsumers.forEach(s -> s.consume(scanResult));
         }
     }
@@ -19,5 +19,9 @@ public class ClassScanner {
     public ClassScanner addScanResultConsumer(ScanResultConsumer... consumers) {
         scanResultConsumers.addAll(Arrays.asList(consumers));
         return this;
+    }
+
+    private ScanResult getScanResult(String pkg) {
+        return new ClassGraph().verbose(false).enableAllInfo().whitelistPackages(pkg).scan();
     }
 }
