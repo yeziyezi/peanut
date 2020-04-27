@@ -25,15 +25,20 @@ public class DependencyForest {
                 throw new RuntimeException("dependency not found or circular dependencies");
             }
             forest.add(level, new HashMap<>());
-            for (DependencyEndpoint endpoint : endpoints) {
+            List<DependencyEndpoint> reAddList = new ArrayList<>();
+            while (!endpoints.isEmpty()) {
+                DependencyEndpoint endpoint = endpoints.remove(0);
                 //if current level is zero,all bean with no dependencies will set in the zero level.
                 //if current level is not zero and some bean's dependencies all contained in prev levels,
                 //these beans will be set in the current level
                 if ((level == 0 && endpoint.getNextListReadOnly().isEmpty())
                         || endpoint.getNextListReadOnly().stream().allMatch(this::contains)) {
                     forest.get(level).put(endpoint.getName(), endpoint);
+                } else {
+                    reAddList.add(endpoint);
                 }
             }
+            endpoints.addAll(reAddList);
         }
         return this;
     }
