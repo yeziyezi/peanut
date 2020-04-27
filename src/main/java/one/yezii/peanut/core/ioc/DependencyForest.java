@@ -18,8 +18,7 @@ public class DependencyForest {
             }
             epNames.add(endpoint.getName());
         }
-        int levelLimit = endpoints.size();
-        for (int level = 0; level < levelLimit; level++) {
+        for (int level = 0; !endpoints.isEmpty(); level++) {
             if (level != 0 && forest.get(level - 1).isEmpty()) {
                 //todo
                 throw new RuntimeException("dependency not found or circular dependencies");
