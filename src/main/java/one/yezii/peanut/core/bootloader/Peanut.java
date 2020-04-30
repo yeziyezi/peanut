@@ -2,8 +2,7 @@ package one.yezii.peanut.core.bootloader;
 
 import one.yezii.peanut.core.annotation.PeanutBoot;
 import one.yezii.peanut.core.context.GlobalContext;
-import one.yezii.peanut.core.ioc.scan.ClassScanner;
-import one.yezii.peanut.core.ioc.scan.ScanResultConsumers;
+import one.yezii.peanut.core.ioc.BeanManager;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,9 +27,6 @@ public class Peanut {
             logger.log(Level.SEVERE, "boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
             System.exit(-1);
         }
-        new ClassScanner().addScanResultConsumer(
-                ScanResultConsumers.PrintAllComponentScanResultConsumer(),
-                ScanResultConsumers.ComponentAnnotationScanResultConsumer()
-        ).scan(bootClass.getPackageName());
+        new BeanManager().initBeans(bootClass.getName());
     }
 }
