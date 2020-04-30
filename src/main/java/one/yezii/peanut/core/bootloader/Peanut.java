@@ -27,6 +27,6 @@ public class Peanut {
             logger.log(Level.SEVERE, "boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
             System.exit(-1);
         }
-        new BeanManager().initBeans(bootClass.getName());
+        new BeanManager().initBeans(bootClass.getPackageName());
     }
 }

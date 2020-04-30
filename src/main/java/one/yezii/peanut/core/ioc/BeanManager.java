@@ -46,6 +46,7 @@ public class BeanManager {
                     autowiredField.setAccessible(true);
                     autowiredField.set(bean, beanMap.get(autowiredField.getType().getName()).getBean());
                 }
+                beanContainer.injectBean(bean);
             }
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
