@@ -3,7 +3,9 @@ package one.yezii.peanut.core.ioc.scan.consumer;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
-import one.yezii.peanut.core.constant.ClassName;
+import one.yezii.peanut.core.constant.AnnotationName;
+import one.yezii.peanut.core.constant.InterfaceName;
+import one.yezii.peanut.core.constant.PackageName;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.facade.PeanutRunner;
 import one.yezii.peanut.core.ioc.BeanDependency;
@@ -21,18 +23,19 @@ import java.util.stream.Collectors;
 
 public class ComponentAnnotationScanResultConsumer implements ScanResultConsumer {
     private Map<String, BeanDependency> getDependencyMap(ClassInfoList classInfos) {
-        return classInfos.stream().collect(Collectors.toMap(ClassInfo::getName, classInfo -> {
-            List<String> dependencies = classInfo.getFieldInfo()
-                    .filter(fieldInfo -> fieldInfo.hasAnnotation(ClassName.autowiredAnnotation))
-                    .stream().map(fieldInfo -> fieldInfo.loadClassAndGetField().getType().getName())
-                    .collect(Collectors.toList());
-            return new BeanDependency().setClassInfo(classInfo).setDependencies(dependencies);
-        }));
+        return classInfos.stream().filter(classInfo -> !classInfo.getName().startsWith(PackageName.core))
+                .collect(Collectors.toMap(ClassInfo::getName, classInfo -> {
+                    List<String> dependencies = classInfo.getFieldInfo()
+                            .filter(fieldInfo -> fieldInfo.hasAnnotation(AnnotationName.Autowired))
+                            .stream().map(fieldInfo -> fieldInfo.loadClassAndGetField().getType().getName())
+                            .collect(Collectors.toList());
+                    return new BeanDependency().setClassInfo(classInfo).setDependencies(dependencies);
+                }));
     }
 
     private void registerBeans(Map<String, BeanDependency> dependencyMap) {
         GlobalContext.runners.putAll(dependencyMap.entrySet().stream()
-                .filter(entry -> entry.getValue().getClassInfo().getInterfaces().containsName(ClassName.runnerInterface))
+                .filter(entry -> entry.getValue().getClassInfo().getInterfaces().containsName(InterfaceName.PeanutRunner))
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> (PeanutRunner) (entry.getValue().getBean()))));
         GlobalContext.beans.putAll(dependencyMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getBean())));
@@ -66,7 +69,7 @@ public class ComponentAnnotationScanResultConsumer implements ScanResultConsumer
     }
 
     public void consume(ScanResult scanResult) {
-        ClassInfoList classWithComponentAnnotation = scanResult.getClassesWithAnnotation(ClassName.componentAnnotation);
+        ClassInfoList classWithComponentAnnotation = scanResult.getClassesWithAnnotation(AnnotationName.Component);
         registerBeans(injectBeans(getDependencyMap(classWithComponentAnnotation)));
     }
 }
