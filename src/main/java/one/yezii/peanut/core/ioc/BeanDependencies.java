@@ -27,7 +27,8 @@ public class BeanDependencies {
                             .stream().map(fieldInfo -> fieldInfo.loadClassAndGetField().getType().getName())
                             .collect(Collectors.toList());
                     return BeanContainer.ofName(classInfo.getName()).addDependencies(dependencies)
-                            .setBeanClass(classInfo.loadClass()).addInterfaces(classInfo.getInterfaces().getNames());
+                            .setBeanClass(classInfo.loadClass()).addInterfaces(classInfo.getInterfaces().getNames())
+                            .addAnnotations(classInfo.getAnnotations().getNames());
                 }));
     }
 
@@ -41,6 +42,12 @@ public class BeanDependencies {
         return beanMap.entrySet().stream()
                 .filter(entry -> entry.getValue().getInterfaces().contains(tClass.getName()))
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> (T) (entry.getValue().getBean())));
+    }
+
+    public Map<String, Object> getBeansWithAnnotation(Class<?> tClass) {
+        return beanMap.entrySet().stream()
+                .filter(entry -> entry.getValue().getAnnotations().contains(tClass.getName()))
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getBean()));
     }
 
     public Map<String, BeanContainer> getBeanMap() {

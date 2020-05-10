@@ -9,6 +9,7 @@ public class BeanContainer {
     private Object bean;
     private Class<?> beanClass;
     private List<String> interfaces = new ArrayList<>();
+    private List<String> annotations = new ArrayList<>();
 
     private BeanContainer() {
     }
@@ -32,8 +33,17 @@ public class BeanContainer {
         return interfaces;
     }
 
+    public List<String> getAnnotations() {
+        return annotations;
+    }
+
     public BeanContainer addInterfaces(List<String> interfaces) {
         this.interfaces.addAll(interfaces);
+        return this;
+    }
+
+    public BeanContainer addAnnotations(List<String> annotations) {
+        this.annotations.addAll(annotations);
         return this;
     }
 
