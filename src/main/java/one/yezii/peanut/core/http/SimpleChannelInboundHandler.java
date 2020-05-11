@@ -1,27 +1,21 @@
-package one.yezii.peanut.core.server;
+package one.yezii.peanut.core.http;
 
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.*;
-
-import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
+import io.netty.handler.codec.http.FullHttpRequest;
 
 @ChannelHandler.Sharable
-public class RequestHandler extends ChannelInboundHandlerAdapter {
+public class SimpleChannelInboundHandler extends ChannelInboundHandlerAdapter {
+    private RequestHandler requestHandler = new RequestHandler();
+
     @Override
     public void channelRead(ChannelHandlerContext context, Object msg) {
         FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
-        System.out.println("server received:" + fullHttpRequest.uri());
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
-                ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT, CharBuffer.wrap(fullHttpRequest.uri()),
-                        StandardCharsets.UTF_8));
-        context.write(response);
+        System.out.println("request uri:" + fullHttpRequest.uri());
+        context.write(requestHandler.handle(fullHttpRequest));
     }
 
     @Override

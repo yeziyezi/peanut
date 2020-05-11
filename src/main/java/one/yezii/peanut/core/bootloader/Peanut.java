@@ -2,6 +2,7 @@ package one.yezii.peanut.core.bootloader;
 
 import one.yezii.peanut.core.annotation.PeanutBoot;
 import one.yezii.peanut.core.context.GlobalContext;
+import one.yezii.peanut.core.http.HttpServer;
 import one.yezii.peanut.core.ioc.BeanManager;
 
 import java.util.logging.Level;
@@ -9,6 +10,8 @@ import java.util.logging.Logger;
 
 public class Peanut {
     private static Logger logger = Logger.getLogger(Peanut.class.toGenericString());
+    private boolean enableServer = true;
+    private int port = 8080;
 
     public static <T> void eat(Class<T> bootClass) {
         Peanut peanut = new Peanut();
@@ -18,8 +21,22 @@ public class Peanut {
             e.printStackTrace();
             System.exit(-1);
         }
-        logger.info("Peanut Application started.");
         GlobalContext.runners.forEach((k, v) -> v.run());
+        if (peanut.enableServer) {
+            new HttpServer().listen(peanut.port).start();
+        }
+        logger.info("Peanut Application started.");
+    }
+
+    public Peanut setEnableServer(boolean enableServer) {
+        this.enableServer = enableServer;
+        return this;
+    }
+
+    public Peanut setEnableServer(boolean enableServer, int port) {
+        this.enableServer = enableServer;
+        this.port = port;
+        return this;
     }
 
     public <T> void getClasses(Class<T> bootClass) {
