@@ -16,10 +16,10 @@ public class RequestHandler {
             try {
                 String responseBody = (String) method.invoke(
                         GlobalContext.beans.get(method.getDeclaringClass().getName()), "hello");
-                return getFullHttpResponse(HttpResponseStatus.OK, responseBody);
+                return getFullHttpResponse200(responseBody);
             } catch (Exception e) {
                 e.printStackTrace();
-                return getFullHttpResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR, "500 internal server error");
+                return getFullHttpResponse500();
             }
         } else {
             return getFullHttpResponse(HttpResponseStatus.NOT_FOUND, "404 NOT FOUND");
@@ -30,5 +30,13 @@ public class RequestHandler {
         return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
                 ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT, CharBuffer.wrap(content),
                         StandardCharsets.UTF_8));
+    }
+
+    private FullHttpResponse getFullHttpResponse200(String responseBody) {
+        return getFullHttpResponse(HttpResponseStatus.OK, responseBody);
+    }
+
+    private FullHttpResponse getFullHttpResponse500() {
+        return getFullHttpResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR, "500 internal server error");
     }
 }
