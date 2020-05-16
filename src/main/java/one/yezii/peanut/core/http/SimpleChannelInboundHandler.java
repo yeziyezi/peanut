@@ -14,7 +14,6 @@ public class SimpleChannelInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext context, Object msg) {
         FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
-        System.out.println("request uri:" + fullHttpRequest.uri());
         context.write(requestHandler.handle(fullHttpRequest));
     }
 
