@@ -6,7 +6,6 @@ import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.http.HttpServer;
 import one.yezii.peanut.core.ioc.BeanManager;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Peanut {
@@ -30,8 +29,7 @@ public class Peanut {
 
     private <T> void getClasses(Class<T> bootClass) {
         if (!bootClass.isAnnotationPresent(PeanutBoot.class)) {
-            logger.log(Level.SEVERE, "boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
-            System.exit(-1);
+            throw new RuntimeException("boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
         }
         new BeanManager().initBeans(bootClass.getPackageName());
     }
