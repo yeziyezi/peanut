@@ -13,7 +13,7 @@ public class Peanut {
     private boolean enableServer = true;
     private int port = 8080;
 
-    public static <T> void eat(Class<T> bootClass) {
+    public static <T> Peanut run(Class<T> bootClass) {
         Peanut peanut = new Peanut();
         try {
             peanut.getClasses(bootClass);
@@ -26,19 +26,8 @@ public class Peanut {
             new HttpServer().listen(peanut.port).start();
         }
         logger.info("Peanut Application started.");
+        return peanut;
     }
-
-    public Peanut setEnableServer(boolean enableServer) {
-        this.enableServer = enableServer;
-        return this;
-    }
-
-    public Peanut setEnableServer(boolean enableServer, int port) {
-        this.enableServer = enableServer;
-        this.port = port;
-        return this;
-    }
-
     public <T> void getClasses(Class<T> bootClass) {
         if (!bootClass.isAnnotationPresent(PeanutBoot.class)) {
             logger.log(Level.SEVERE, "boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
