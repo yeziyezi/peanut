@@ -7,6 +7,33 @@
     <groupId>one.yezii</groupId>
     <artifactId>peanut</artifactId>
     <version>0.0.1</version>
+    <packaging>jar</packaging>
+    <name>Peanut</name>
+    <description>A nano java web framework</description>
+    <url>https://github.com/yeziyezi/peanut</url>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>EscYezi</name>
+            <email>escyezi@foxmail.com</email>
+            <url>https://github.com/yeziyezi</url>
+            <id>yeziyezi</id>
+        </developer>
+    </developers>
+    <issueManagement>
+        <url>https://github.com/yeziyezi/peanut/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+    <scm>
+        <url>https://github.com/yeziyezi/peanut</url>
+        <connection>scm:git:https://github.com/yeziyezi/peanut.git</connection>
+    </scm>
 
     <properties>
         <java.version>11</java.version>
