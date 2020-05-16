@@ -20,7 +20,7 @@ public class HttpServer {
         return this;
     }
 
-    public void start() {
+    public void start() throws InterruptedException {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(new NioEventLoopGroup())
                 .channel(NioServerSocketChannel.class)
@@ -35,11 +35,7 @@ public class HttpServer {
                         ch.pipeline().addLast(new SimpleChannelInboundHandler());
                     }
                 });
-        try {
-            logger.info("http server is listening on port " + port);
-            serverBootstrap.bind().sync().channel().closeFuture().sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        logger.info("http server is listening on port " + port);
+        serverBootstrap.bind().sync().channel().closeFuture().sync();
     }
 }
