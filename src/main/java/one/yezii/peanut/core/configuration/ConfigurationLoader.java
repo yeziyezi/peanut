@@ -19,10 +19,10 @@ public class ConfigurationLoader {
     }
 
     public static int getInt(String key) {
-        return Integer.parseInt(configs.get(key));
+        return Integer.parseInt(getString(key));
     }
 
     public static boolean getBool(String key) {
-        return Boolean.parseBoolean(configs.get(key));
+        return Boolean.parseBoolean(getString(key));
     }
 }
