@@ -2,6 +2,7 @@ package one.yezii.peanut.core.bootloader;
 
 import one.yezii.peanut.core.annotation.PeanutBoot;
 import one.yezii.peanut.core.configuration.HttpServerConfiguration;
+import one.yezii.peanut.core.configuration.PropertiesLoader;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.http.HttpServer;
 import one.yezii.peanut.core.ioc.BeanManager;
@@ -21,6 +22,7 @@ public class Peanut {
     }
 
     private <T> void boot(Class<T> bootClass) throws Exception {
+        PropertiesLoader.load();
         getClasses(bootClass);
         GlobalContext.runners.forEach((k, v) -> v.run());
         startHttpServer();
