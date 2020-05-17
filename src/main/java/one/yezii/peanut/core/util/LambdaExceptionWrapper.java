@@ -9,7 +9,7 @@ public class LambdaExceptionWrapper {
             try {
                 return checkedFunction.apply(t);
             } catch (Exception e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         };
     }
@@ -19,7 +19,7 @@ public class LambdaExceptionWrapper {
             try {
                 checkedFunctionVoid.apply(t);
             } catch (Exception e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         };
     }
