@@ -32,7 +32,6 @@ public class HttpServer {
                                 .addLast("aggregator", new HttpObjectAggregator(512 * 1024))
                                 .addLast("requestHandler", new SimpleChannelInboundHandler())
                                 .addLast("compressor", new HttpContentCompressor());
-                        ch.pipeline().addLast(new SimpleChannelInboundHandler());
                     }
                 });
         logger.info("http server is listening on port " + port);
