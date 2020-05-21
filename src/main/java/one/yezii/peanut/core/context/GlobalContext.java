@@ -9,6 +9,6 @@ import java.util.Map;
 public class GlobalContext {
     public final static Map<String, Object> beans = new HashMap<>();
     public final static Map<String, PeanutRunner> runners = new HashMap<>();
-    public final static Map<String, Method> routeMap = new HashMap<>();
+    public final static Map<Integer, Method> routeMap = new HashMap<>();
     public final static Map<String, String> configMap = new HashMap<>();
 }

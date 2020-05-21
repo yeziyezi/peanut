@@ -3,33 +3,29 @@ package one.yezii.peanut.core.http;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.*;
+import one.yezii.peanut.core.context.GlobalContext;
 
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class RequestHandler {
-    private static UriRouter uriRouter;
+import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 
-    public FullHttpResponse handle(FullHttpRequest fullHttpRequest) {
+public class RequestHandler {
+
+    public FullHttpResponse handle(FullHttpRequest request) {
+        //Uri does not support path param
+        UriRoute uriRoute = UriRoute.of(request.uri(), request.method().name());
+        if (!GlobalContext.routeMap.containsKey(uriRoute.hash())) {
+            return getFullHttpResponse404();
+        }
+        //todo: execute method call here.
         try {
-            return getFullHttpResponse200(uriRouter.route(fullHttpRequest));
+            return getFullHttpResponse200("route:" + uriRoute.routeUri());
         } catch (Exception e) {
             e.printStackTrace();
             return getFullHttpResponse500();
         }
-//        if (GlobalContext.routeMap.containsKey(fullHttpRequest.uri())) {
-//            Method method = GlobalContext.routeMap.get(fullHttpRequest.uri());
-//            try {
-//                String responseBody = (String) method.invoke(
-//                        GlobalContext.beans.get(method.getDeclaringClass().getName()), "hello");
-//                return getFullHttpResponse200(responseBody);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return getFullHttpResponse500();
-//            }
-//        } else {
-//            return getFullHttpResponse(HttpResponseStatus.NOT_FOUND, "404 NOT FOUND");
-//        }
     }
 
     private FullHttpResponse getFullHttpResponse(HttpResponseStatus status, String content) {
@@ -42,7 +38,11 @@ public class RequestHandler {
         return getFullHttpResponse(HttpResponseStatus.OK, responseBody);
     }
 
+    private FullHttpResponse getFullHttpResponse404() {
+        return getFullHttpResponse(NOT_FOUND, NOT_FOUND.toString());
+    }
+
     private FullHttpResponse getFullHttpResponse500() {
-        return getFullHttpResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR, "500 internal server error");
+        return getFullHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR.toString());
     }
 }

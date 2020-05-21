@@ -1,5 +1,6 @@
 package one.yezii.peanut.core.annotation;
 
+
 import one.yezii.peanut.core.constant.HttpMethod;
 
 import java.lang.annotation.ElementType;
@@ -12,5 +13,5 @@ import java.lang.annotation.Target;
 public @interface Route {
     String value() default "";
 
-    HttpMethod method();
+    HttpMethod method();//all uppercase http method
 }

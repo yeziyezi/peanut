@@ -4,6 +4,7 @@ import one.yezii.peanut.core.annotation.Route;
 import one.yezii.peanut.core.annotation.Router;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.facade.PeanutRunner;
+import one.yezii.peanut.core.http.UriRoute;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,26 +25,21 @@ public class BeanManager {
         registerBeans(beanDependencies);
     }
 
-    private Map<String, Method> getRoutMap(Map<String, Object> routerMap) {
-        Map<String, Method> routeMap = new HashMap<>();
+    private Map<Integer, Method> getRoutMap(Map<String, Object> routerMap) {
+        Map<Integer, Method> routeMap = new HashMap<>();
         routerMap.forEach((name, bean) -> {
             String prefix = bean.getClass().getAnnotation(Router.class).value();
             Arrays.stream(bean.getClass().getMethods())
                     .filter(method -> method.isAnnotationPresent(Route.class))
                     .filter(method -> method.canAccess(bean))//non-public method will not register in routeMap
                     .forEach(method -> {
-                        String routeString = prefix + method.getDeclaredAnnotation(Route.class).value();
-                        if (routeString.startsWith("//")) {
-                            routeString = routeString.replaceFirst("//", "/");
-                        } else if (!routeString.startsWith("/")) {
-                            routeString = "/" + routeString;
-                        } else {
-                            //todo: other handling
+                        Route route = method.getDeclaredAnnotation(Route.class);
+                        String subRoute = route.value().startsWith("/") ? route.value() : "/" + route.value();
+                        UriRoute uriRoute = UriRoute.of(prefix + subRoute, route.method().toString());
+                        if (routeMap.containsKey(uriRoute.hash())) {
+                            throw new RuntimeException("route[" + uriRoute.routeUri() + "] is duplicated.");
                         }
-                        if (routeMap.containsKey(routeString)) {
-                            throw new RuntimeException("");
-                        }
-                        routeMap.put(routeString, method);
+                        routeMap.put(uriRoute.hash(), method);
                     });
         });
         return routeMap;
