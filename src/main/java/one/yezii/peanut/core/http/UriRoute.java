@@ -18,22 +18,19 @@ public class UriRoute {
         UriRoute uriRoute = new UriRoute();
         uriRoute.routeUri = uriRoute.getUriRoute(uri);
         uriRoute.method = method;
-        uriRoute.hash = uriRoute.getHash(uriRoute.routeUri, uriRoute.method);
+        uriRoute.hash = Objects.hash(uriRoute.routeUri, uriRoute.method);
         uriRoute.uriParam = uriRoute.getUriParam(uri);
         return uriRoute;
     }
 
-    /**
-     * @param routeUri route Uri
-     * @param method   all uppercase http method. e.g. GET/POST
-     * @return hash value
-     */
-    private int getHash(String routeUri, String method) {
-        return Objects.hash(routeUri, method);
+    @Override
+    public int hashCode() {
+        return hash;
     }
 
-    public int hash() {
-        return hash;
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof UriRoute && this.hashCode() == obj.hashCode();
     }
 
     public Map<String, String> uriParam() {

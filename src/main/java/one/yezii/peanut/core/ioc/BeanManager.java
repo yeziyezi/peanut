@@ -4,10 +4,10 @@ import one.yezii.peanut.core.annotation.Route;
 import one.yezii.peanut.core.annotation.Router;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.facade.PeanutRunner;
+import one.yezii.peanut.core.http.MethodInvoker;
 import one.yezii.peanut.core.http.UriRoute;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,16 +18,15 @@ import static one.yezii.peanut.core.util.LambdaExceptionWrapper.wrap;
 import static one.yezii.peanut.core.util.LambdaExceptionWrapper.wrapVoid;
 
 public class BeanManager {
-
     public void initBeans(String basePackage) {
         BeanDependencies beanDependencies = new BeanDependencies(basePackage);
         injectBeans(beanDependencies);
         registerBeans(beanDependencies);
     }
 
-    private Map<Integer, Method> getRoutMap(Map<String, Object> routerMap) {
-        Map<Integer, Method> routeMap = new HashMap<>();
-        routerMap.forEach((name, bean) -> {
+    private Map<UriRoute, MethodInvoker> getRoutMap(Map<String, Object> routerMap) {
+        Map<UriRoute, MethodInvoker> routeMap = new HashMap<>();
+        routerMap.forEach((routerName, bean) -> {
             String prefix = bean.getClass().getAnnotation(Router.class).value();
             Arrays.stream(bean.getClass().getMethods())
                     .filter(method -> method.isAnnotationPresent(Route.class))
@@ -36,10 +35,10 @@ public class BeanManager {
                         Route route = method.getDeclaredAnnotation(Route.class);
                         String subRoute = route.value().startsWith("/") ? route.value() : "/" + route.value();
                         UriRoute uriRoute = UriRoute.of(prefix + subRoute, route.method().toString());
-                        if (routeMap.containsKey(uriRoute.hash())) {
+                        if (routeMap.containsKey(uriRoute)) {
                             throw new RuntimeException("route[" + uriRoute.routeUri() + "] is duplicated.");
                         }
-                        routeMap.put(uriRoute.hash(), method);
+                        routeMap.put(uriRoute, MethodInvoker.of(method, routerName));
                     });
         });
         return routeMap;
