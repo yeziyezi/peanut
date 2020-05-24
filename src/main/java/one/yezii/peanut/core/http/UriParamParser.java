@@ -38,7 +38,7 @@ public class UriParamParser {
         if (uriValueString == null || parser == null) {
             return null;
         }
-        return parser.parse(parameter.getName());
+        return parser.parse(uriValueString);
     }
 
     public Object[] parse() {
