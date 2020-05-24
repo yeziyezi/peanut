@@ -2,6 +2,7 @@ package one.yezii.peanut.core.ioc;
 
 import one.yezii.peanut.core.annotation.Route;
 import one.yezii.peanut.core.annotation.Router;
+import one.yezii.peanut.core.constant.HttpMethod;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.facade.PeanutRunner;
 import one.yezii.peanut.core.http.MethodInvoker;
@@ -24,30 +25,45 @@ public class BeanManager {
         registerBeans(beanDependencies);
     }
 
-    private Map<UriRoute, MethodInvoker> getRoutMap(Map<String, Object> routerMap) {
+    private Map<UriRoute, MethodInvoker> getRouteMap(Map<String, Object> routerMap) {
         Map<UriRoute, MethodInvoker> routeMap = new HashMap<>();
         routerMap.forEach((routerName, bean) -> {
-            String prefix = bean.getClass().getAnnotation(Router.class).value();
+            String prefix = getPrefixRoute(bean);
             Arrays.stream(bean.getClass().getMethods())
                     .filter(method -> method.isAnnotationPresent(Route.class))
                     .filter(method -> method.canAccess(bean))//non-public method will not register in routeMap
                     .forEach(method -> {
                         Route route = method.getDeclaredAnnotation(Route.class);
-                        String subRoute = route.value().startsWith("/") ? route.value() : "/" + route.value();
-                        UriRoute uriRoute = UriRoute.of(prefix + subRoute, route.method().toString());
-                        if (routeMap.containsKey(uriRoute)) {
-                            throw new RuntimeException("route[" + uriRoute.routeUri() + "] is duplicated.");
+                        MethodInvoker methodInvoker = MethodInvoker.of(method, routerName);
+                        for (HttpMethod httpMethod : route.method()) {
+                            UriRoute uriRoute = UriRoute.of(getFullRoute(prefix, route.value()), httpMethod.toString());
+                            checkUriRouteAlreadyExist(routeMap, uriRoute);
+                            routeMap.put(uriRoute, methodInvoker);
                         }
-                        routeMap.put(uriRoute, MethodInvoker.of(method, routerName));
                     });
         });
         return routeMap;
     }
 
+    private void checkUriRouteAlreadyExist(Map<UriRoute, MethodInvoker> routeMap, UriRoute uriRoute) {
+        if (routeMap.containsKey(uriRoute)) {
+            throw new RuntimeException("route[" + uriRoute.routeUri() + "] is duplicated.");
+        }
+    }
+
+    private String getPrefixRoute(Object bean) {
+        String prefix = bean.getClass().getAnnotation(Router.class).value();
+        return prefix.startsWith("/") ? prefix : "/" + prefix;
+    }
+
+    private String getFullRoute(String prefix, String subRoute) {
+        return prefix + (subRoute.startsWith("/") ? subRoute : "/" + subRoute);
+    }
+
     private void registerBeans(BeanDependencies beanDependencies) {
         GlobalContext.beans.putAll(beanDependencies.getBeans());
         GlobalContext.runners.putAll(beanDependencies.getBeansWithInterface(PeanutRunner.class));
-        GlobalContext.routeMap.putAll(getRoutMap(beanDependencies.getBeansWithAnnotation(Router.class)));
+        GlobalContext.routeMap.putAll(getRouteMap(beanDependencies.getBeansWithAnnotation(Router.class)));
     }
 
     private List<String> getInjectOrders(BeanDependencies beanDependencies) {
