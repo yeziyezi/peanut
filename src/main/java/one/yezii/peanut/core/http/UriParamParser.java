@@ -9,12 +9,18 @@ public class UriParamParser {
     private static HashMap<Class<?>, StringObjectParser> basicParserMap = new HashMap<>();
 
     static {
-        basicParserMap.put(Integer.TYPE, Integer::parseInt);
         basicParserMap.put(String.class, String::valueOf);
+        basicParserMap.put(Integer.class, Integer::parseInt);
+        basicParserMap.put(Integer.TYPE, Integer::parseInt);
+        basicParserMap.put(Boolean.class, Boolean::parseBoolean);
         basicParserMap.put(Boolean.TYPE, Boolean::parseBoolean);
+        basicParserMap.put(Long.class, Long::parseLong);
         basicParserMap.put(Long.TYPE, Long::parseLong);
+        basicParserMap.put(Float.class, Float::parseFloat);
         basicParserMap.put(Float.TYPE, Float::parseFloat);
+        basicParserMap.put(Double.class, Double::parseDouble);
         basicParserMap.put(Double.TYPE, Double::parseDouble);
+        basicParserMap.put(Byte.class, Byte::parseByte);
         basicParserMap.put(Byte.TYPE, Byte::parseByte);
     }
 
