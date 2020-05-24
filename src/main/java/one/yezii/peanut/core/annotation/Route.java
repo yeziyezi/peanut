@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 public @interface Route {
     String value() default "";
 
-    HttpMethod method();//all uppercase http method
+    HttpMethod[] method() default {HttpMethod.GET, HttpMethod.POST};//all uppercase http method
 }
