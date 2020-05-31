@@ -4,7 +4,7 @@ import one.yezii.peanut.core.annotation.PeanutBoot;
 import one.yezii.peanut.core.configuration.HttpServerConfiguration;
 import one.yezii.peanut.core.configuration.PropertiesLoader;
 import one.yezii.peanut.core.context.GlobalContext;
-import one.yezii.peanut.core.http.HttpServer;
+import one.yezii.peanut.core.http.server.HttpServer;
 import one.yezii.peanut.core.ioc.BeanManager;
 
 import java.util.logging.Logger;

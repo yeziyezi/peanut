@@ -6,7 +6,7 @@ import one.yezii.peanut.core.constant.HttpMethod;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.facade.PeanutRunner;
 import one.yezii.peanut.core.http.MethodInvoker;
-import one.yezii.peanut.core.http.UriRoute;
+import one.yezii.peanut.core.http.route.UriRoute;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
