@@ -1,4 +1,4 @@
-package one.yezii.peanut.core.http;
+package one.yezii.peanut.core.http.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;

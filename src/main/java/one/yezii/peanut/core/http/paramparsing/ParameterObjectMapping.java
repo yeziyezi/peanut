@@ -1,4 +1,4 @@
-package one.yezii.peanut.core.http;
+package one.yezii.peanut.core.http.paramparsing;
 
 import java.lang.reflect.Parameter;
 import java.util.LinkedHashMap;

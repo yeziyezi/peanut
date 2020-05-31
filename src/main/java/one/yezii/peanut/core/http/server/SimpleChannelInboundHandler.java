@@ -1,4 +1,4 @@
-package one.yezii.peanut.core.http;
+package one.yezii.peanut.core.http.server;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
