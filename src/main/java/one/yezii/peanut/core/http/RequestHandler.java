@@ -21,9 +21,12 @@ public class RequestHandler {
             MethodInvoker methodInvoker = routeMap.get(uriRoute);
             //parse uri Param to the type same with the method parameter type
             //now only support simple type like String and primitive types.
-            Object[] methodParams = UriParamParser.of(methodInvoker.getMethod().getParameters()
-                    , uriRoute.uriParam()).parse();
-            Object result = methodInvoker.invoke(methodParams);
+            ParameterObjectMapping poMapping = BasicParamParser.of(
+                    methodInvoker.parameters(), uriRoute.uriParam()).parse();
+            if (poMapping.containsNull()) {
+                //todo
+            }
+            Object result = methodInvoker.invoke(poMapping.toArray());
             return ok(result == null ? null : result.toString());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

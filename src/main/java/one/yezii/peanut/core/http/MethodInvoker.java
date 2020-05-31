@@ -4,6 +4,7 @@ import one.yezii.peanut.core.context.GlobalContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 public class MethodInvoker {
     private Method method;
@@ -23,7 +24,11 @@ public class MethodInvoker {
         return method.invoke(GlobalContext.beans.get(beanName), params);
     }
 
-    public Method getMethod() {
+    public Method method() {
         return method;
+    }
+
+    public Parameter[] parameters() {
+        return method.getParameters();
     }
 }
