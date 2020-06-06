@@ -4,12 +4,13 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.*;
 import one.yezii.peanut.core.http.MethodInvoker;
-import one.yezii.peanut.core.http.paramparsing.BasicParamParser;
 import one.yezii.peanut.core.http.paramparsing.ParameterObjectMapping;
+import one.yezii.peanut.core.http.paramparsing.RequestParamParser;
 import one.yezii.peanut.core.http.route.UriRoute;
 
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static one.yezii.peanut.core.context.GlobalContext.routeMap;
@@ -23,13 +24,10 @@ public class RequestHandler {
         }
         try {
             MethodInvoker methodInvoker = routeMap.get(uriRoute);
-            //parse uri Param to the type same with the method parameter type
-            //now only support simple type like String and primitive types.
-            ParameterObjectMapping poMapping = BasicParamParser.of(
-                    methodInvoker.parameters(), uriRoute.uriParam()).parse();
-            if (poMapping.containsNull()) {
-                //todo
-            }
+            //todo: add resolver of request body and fill result in map
+            Map<String, String> requestParamMap = uriRoute.uriParam();
+            ParameterObjectMapping poMapping = RequestParamParser.of(
+                    methodInvoker.parameters(), requestParamMap).parse();
             Object result = methodInvoker.invoke(poMapping.toArray());
             return ok(result == null ? null : result.toString());
         } catch (IllegalArgumentException e) {
