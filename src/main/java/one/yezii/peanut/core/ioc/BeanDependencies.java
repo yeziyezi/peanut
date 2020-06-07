@@ -5,7 +5,6 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import one.yezii.peanut.core.annotation.Autowired;
 import one.yezii.peanut.core.annotation.Component;
-import one.yezii.peanut.core.constant.PackageName;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class BeanDependencies {
         this.beanMap = scanResult
                 .getClassesWithAnnotation(Component.class.getName())
                 .stream()
-                .filter(classInfo -> !classInfo.getName().startsWith(PackageName.core))
+//                .filter(classInfo -> !classInfo.getName().startsWith(PackageName.core))
                 .collect(Collectors.toMap(ClassInfo::getName, classInfo -> {
                     List<String> dependencies = classInfo.getFieldInfo()
                             .filter(fieldInfo -> fieldInfo.hasAnnotation(Autowired.class.getName()))
