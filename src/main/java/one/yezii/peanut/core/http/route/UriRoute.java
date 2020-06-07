@@ -1,14 +1,14 @@
 package one.yezii.peanut.core.http.route;
 
+import one.yezii.peanut.core.util.CommonMap;
+
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class UriRoute {
     private String routeUri;
     private String method;
-    private Map<String, String> uriParam;
+    private CommonMap uriParam;
     private int hash;
 
     private UriRoute() {
@@ -33,7 +33,7 @@ public class UriRoute {
         return obj instanceof UriRoute && this.hashCode() == obj.hashCode();
     }
 
-    public Map<String, String> uriParam() {
+    public CommonMap uriParam() {
         return uriParam;
     }
 
@@ -41,12 +41,12 @@ public class UriRoute {
         return routeUri;
     }
 
-    private Map<String, String> getUriParam(String uri) {
+    private CommonMap getUriParam(String uri) {
         int questionMarkIndex = uri.indexOf("?");
         if (questionMarkIndex < 0) {
-            return Collections.emptyMap();
+            return (CommonMap) Collections.<String, Object>emptyMap();
         }
-        Map<String, String> map = new HashMap<>();
+        CommonMap map = new CommonMap();
         String sub = uri.substring(questionMarkIndex + 1);
         for (String split : sub.split("&")) {
             int equalIndex = split.indexOf("=");

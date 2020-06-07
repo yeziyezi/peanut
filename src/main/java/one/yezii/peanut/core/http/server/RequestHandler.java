@@ -1,5 +1,8 @@
 package one.yezii.peanut.core.http.server;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.*;
@@ -7,15 +10,23 @@ import one.yezii.peanut.core.http.MethodInvoker;
 import one.yezii.peanut.core.http.paramparsing.ParameterObjectMapping;
 import one.yezii.peanut.core.http.paramparsing.RequestParamParser;
 import one.yezii.peanut.core.http.route.UriRoute;
+import one.yezii.peanut.core.util.CommonMap;
 
 import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.HashMap;
 
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static one.yezii.peanut.core.context.GlobalContext.routeMap;
 
 public class RequestHandler {
+
+    public static void main(String[] args) throws JsonProcessingException {
+        JsonNode map = new ObjectMapper().readValue("{\"a\":[]}", JsonNode.class);
+        System.out.println(map);
+    }
 
     public FullHttpResponse handle(FullHttpRequest request) {
         UriRoute uriRoute = UriRoute.of(request.uri(), request.method().name());
@@ -25,7 +36,13 @@ public class RequestHandler {
         try {
             MethodInvoker methodInvoker = routeMap.get(uriRoute);
             //todo: add resolver of request body and fill result in map
-            Map<String, String> requestParamMap = uriRoute.uriParam();
+            CommonMap requestParamMap = uriRoute.uriParam();
+            HttpHeaders headers = request.headers();
+            // if application/json
+            if (headers.contains(CONTENT_TYPE) && APPLICATION_JSON.contentEquals(headers.get(CONTENT_TYPE))) {
+                requestParamMap.put("@json",
+                        new ObjectMapper().convertValue(request.content().toString(UTF_8), JsonNode.class));
+            }
             ParameterObjectMapping poMapping = RequestParamParser.of(
                     methodInvoker.parameters(), requestParamMap).parse();
             Object result = methodInvoker.invoke(poMapping.toArray());
@@ -37,12 +54,6 @@ public class RequestHandler {
             e.printStackTrace();
             return internalServerError();
         }
-    }
-
-    private FullHttpResponse response(HttpResponseStatus status, String content) {
-        return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
-                ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT, CharBuffer.wrap(content),
-                        StandardCharsets.UTF_8));
     }
 
     private FullHttpResponse ok(String responseBody) {
@@ -59,5 +70,14 @@ public class RequestHandler {
 
     private FullHttpResponse internalServerError() {
         return response(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR.toString());
+    }
+
+    private FullHttpResponse response(HttpResponseStatus status, String content) {
+        return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
+                ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT, CharBuffer.wrap(content),
+                        UTF_8));
+    }
+
+    static class MyMap extends HashMap<String, Object> {
     }
 }

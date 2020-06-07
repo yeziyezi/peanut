@@ -2,11 +2,13 @@ package one.yezii.peanut.core.http.paramparsing;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.yezii.peanut.core.util.CommonMap;
 
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class RequestParamParser {
     private final static ObjectMapper objectMapper = new ObjectMapper()
@@ -30,12 +32,12 @@ public class RequestParamParser {
     }
 
     private Parameter[] routeParams;
-    private Map<String, String> requestParams;
+    private CommonMap requestParams;
 
     private RequestParamParser() {
     }
 
-    public static RequestParamParser of(Parameter[] routeParams, Map<String, String> requestParams) {
+    public static RequestParamParser of(Parameter[] routeParams, CommonMap requestParams) {
         RequestParamParser parser = new RequestParamParser();
         parser.routeParams = routeParams;
         parser.requestParams = requestParams;
@@ -44,7 +46,8 @@ public class RequestParamParser {
 
 
     private Object parse(Parameter parameter) {
-        String valueString = requestParams.get(parameter.getName());
+        String valueString = Optional.ofNullable(requestParams.get(parameter.getName()))
+                .map(Object::toString).orElse(null);
         StringObjectParser parser = basicParserMap.get(parameter.getType());
         //if parameter has a basic type,use basic parser
         if (parser != null) {
