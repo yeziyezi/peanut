@@ -11,10 +11,6 @@ public class ParameterObjectMapping {
         this.map.put(parameter, value);
     }
 
-    public boolean containsNull() {
-        return map.containsValue(null);
-    }
-
     public Object[] toArray() {
         return map.values().toArray();
     }
