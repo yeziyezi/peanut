@@ -1,6 +1,5 @@
 package one.yezii.peanut.core.http.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBufAllocator;
@@ -22,11 +21,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static one.yezii.peanut.core.context.GlobalContext.routeMap;
 
 public class RequestHandler {
-
-    public static void main(String[] args) throws JsonProcessingException {
-        JsonNode map = new ObjectMapper().readValue("{\"a\":[]}", JsonNode.class);
-        System.out.println(map);
-    }
 
     public FullHttpResponse handle(FullHttpRequest request) {
         UriRoute uriRoute = UriRoute.of(request.uri(), request.method().name());
