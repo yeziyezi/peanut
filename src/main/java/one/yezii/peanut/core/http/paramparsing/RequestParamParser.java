@@ -1,7 +1,5 @@
 package one.yezii.peanut.core.http.paramparsing;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import one.yezii.peanut.core.util.CommonMap;
 
 import java.lang.reflect.Parameter;
@@ -10,9 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static one.yezii.peanut.core.bean.UtilBeans.objectMapper;
+
 public class RequestParamParser {
-    private final static ObjectMapper objectMapper = new ObjectMapper()
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     private static Map<Class<?>, StringObjectParser> basicParserMap = new HashMap<>();
 
     static {
