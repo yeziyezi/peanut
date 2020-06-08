@@ -19,7 +19,7 @@ public class BeanDependencies {
         this.beanMap = scanResult
                 .getClassesWithAnnotation(Component.class.getName())
                 .stream()
-//                .filter(classInfo -> !classInfo.getName().startsWith(PackageName.core))
+                .filter(classInfo -> !classInfo.isAnnotation())
                 .collect(Collectors.toMap(ClassInfo::getName, classInfo -> {
                     List<String> dependencies = classInfo.getFieldInfo()
                             .filter(fieldInfo -> fieldInfo.hasAnnotation(Autowired.class.getName()))
