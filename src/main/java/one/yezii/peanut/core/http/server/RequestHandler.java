@@ -1,7 +1,5 @@
 package one.yezii.peanut.core.http.server;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.*;
@@ -34,8 +32,7 @@ public class RequestHandler {
             HttpHeaders headers = request.headers();
             // if application/json
             if (headers.contains(CONTENT_TYPE) && APPLICATION_JSON.contentEquals(headers.get(CONTENT_TYPE))) {
-                requestParamMap.put("@json",
-                        new ObjectMapper().convertValue(request.content().toString(UTF_8), JsonNode.class));
+                requestParamMap.put("@json", request.content().toString(UTF_8));
             }
             ParameterObjectMapping poMapping = RequestParamParser.of(
                     methodInvoker.parameters(), requestParamMap).parse();
