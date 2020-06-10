@@ -6,14 +6,14 @@ import java.util.Set;
 
 public class BeanContainer {
     private String name;
-    private Set<String> dependencies = new HashSet<>();
+    private Set<Dependency> dependencies = new HashSet<>();
     private Object bean;
     private Class<?> beanType;
     private Set<String> annotations = new HashSet<>();
     private Set<String> parents = new HashSet<>();
     private Set<String> interfaces = new HashSet<>();
-    private boolean isMethodBean;
-    private String ClassBeanNameOfMethodBean;
+    private boolean isMethodBean = false;
+    private String configurationBeanName;
 
     public BeanContainer(String name) {
         this.name = name;
@@ -31,11 +31,11 @@ public class BeanContainer {
         return annotations.contains(annotationName);
     }
 
-    public void addDependency(String... dependencyName) {
+    public void addDependencies(Dependency... dependencyName) {
         dependencies.addAll(Arrays.asList(dependencyName));
     }
 
-    public Set<String> dependencies() {
+    public Set<Dependency> dependencies() {
         return dependencies;
     }
 
@@ -55,7 +55,7 @@ public class BeanContainer {
         return parents.contains(parentName);
     }
 
-    public void remove(String... dependencyName) {
+    public void remove(Dependency... dependencyName) {
         dependencies.removeAll(Arrays.asList(dependencyName));
     }
 
@@ -63,7 +63,7 @@ public class BeanContainer {
         return bean;
     }
 
-    public BeanContainer bean(Object bean) {
+    public BeanContainer injectBean(Object bean) {
         this.bean = bean;
         return this;
     }
@@ -75,5 +75,31 @@ public class BeanContainer {
     public BeanContainer beanType(Class<?> beanType) {
         this.beanType = beanType;
         return this;
+    }
+
+    public void setMethodBean() {
+        this.isMethodBean = true;
+    }
+
+    public boolean isMethodBean() {
+        return isMethodBean;
+    }
+
+    public String configurationBeanName() {
+        return configurationBeanName;
+    }
+
+    public void configurationBeanName(String configurationBeanName) {
+        this.configurationBeanName = configurationBeanName;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof BeanContainer && ((BeanContainer) obj).name.equals(name);
     }
 }
