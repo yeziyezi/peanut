@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class BeanContainer {
     private String name;
-    private Set<Dependency> dependencies = new HashSet<>();
+    private Set<String> dependencies = new HashSet<>();
     private Object bean;
     private Class<?> beanType;
     private Set<String> annotations = new HashSet<>();
@@ -31,11 +31,11 @@ public class BeanContainer {
         return annotations.contains(annotationName);
     }
 
-    public void addDependencies(Dependency... dependencyName) {
+    public void addDependencies(String... dependencyName) {
         dependencies.addAll(Arrays.asList(dependencyName));
     }
 
-    public Set<Dependency> dependencies() {
+    public Set<String> dependencies() {
         return dependencies;
     }
 
@@ -55,7 +55,7 @@ public class BeanContainer {
         return parents.contains(parentName);
     }
 
-    public void remove(Dependency... dependencyName) {
+    public void removeDependencies(String... dependencyName) {
         dependencies.removeAll(Arrays.asList(dependencyName));
     }
 
@@ -63,18 +63,16 @@ public class BeanContainer {
         return bean;
     }
 
-    public BeanContainer injectBean(Object bean) {
+    public void injectBean(Object bean) {
         this.bean = bean;
-        return this;
     }
 
     public Class<?> beanType() {
         return beanType;
     }
 
-    public BeanContainer beanType(Class<?> beanType) {
+    public void beanType(Class<?> beanType) {
         this.beanType = beanType;
-        return this;
     }
 
     public void setMethodBean() {
