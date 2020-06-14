@@ -6,6 +6,7 @@ import one.yezii.peanut.core.configuration.PropertiesLoader;
 import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.http.server.HttpServer;
 import one.yezii.peanut.core.ioc.BeanManager;
+import one.yezii.peanut.core.ioc2_1.PackageRegister;
 
 import java.util.logging.Logger;
 
@@ -22,6 +23,9 @@ public class Peanut {
     }
 
     private <T> void boot(Class<T> bootClass) throws Exception {
+        String bootloaderPackageName = Peanut.class.getPackageName();
+        String corePackage = bootloaderPackageName.substring(bootloaderPackageName.lastIndexOf("."));
+        PackageRegister.register(corePackage);
         PropertiesLoader.load();
         getClasses(bootClass);
         GlobalContext.runners.forEach((k, v) -> v.run());
@@ -33,6 +37,7 @@ public class Peanut {
         if (!bootClass.isAnnotationPresent(PeanutBoot.class)) {
             throw new RuntimeException("boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
         }
+        PackageRegister.register(bootClass.getPackageName());
         new BeanManager().initBeans(bootClass.getPackageName());
     }
 
