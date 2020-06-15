@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 public class MethodBeanContainer extends BeanContainer {
     private String configurationBeanName;
     private MethodInfo methodInfo;
+    private String[] parameterNames;
 
     public MethodBeanContainer(String name) {
         super(name);
@@ -20,6 +21,14 @@ public class MethodBeanContainer extends BeanContainer {
     @Override
     public boolean implementsInterface(Class<?> interfaceClass) {
         throw new IllegalCallerException("methodBean doesn't support [implementsInterface] call");
+    }
+
+    public String[] getParameterNames() {
+        return parameterNames;
+    }
+
+    public void setParameterNames(String[] parameterNames) {
+        this.parameterNames = parameterNames;
     }
 
     public void setMethodInfo(MethodInfo methodInfo) {
