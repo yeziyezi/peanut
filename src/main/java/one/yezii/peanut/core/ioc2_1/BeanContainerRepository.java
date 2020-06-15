@@ -1,5 +1,6 @@
 package one.yezii.peanut.core.ioc2_1;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,5 +32,9 @@ public class BeanContainerRepository {
 
     public static Object getBeanInstance(String name) {
         return getBeanContainer(name).beanInstance();
+    }
+
+    public static List<BeanContainer> all() {
+        return new ArrayList<>(map.values());
     }
 }

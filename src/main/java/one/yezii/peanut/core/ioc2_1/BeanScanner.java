@@ -3,6 +3,7 @@ package one.yezii.peanut.core.ioc2_1;
 import io.github.classgraph.ClassGraph;
 import one.yezii.peanut.core.annotation.Component;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,8 +44,9 @@ public class BeanScanner {
                     if (beanContainer.isComponentBean()) {
                         Object beanInstance = beanContainer.beanInstance();
                         if (beanInstance != null) {
-                            beanInstance.getClass().getDeclaredField(dependency)
-                                    .set(beanContainer, BeanContainerRepository.getBeanInstance(dependency));
+                            Field field = beanInstance.getClass().getDeclaredField(dependency);
+                            field.setAccessible(true);
+                            field.set(beanInstance, BeanContainerRepository.getBeanInstance(dependency));
                         } else {
                             logger.warning("component bean [" + beanContainer.name() + "] has null bean instance.");
                         }
@@ -58,14 +60,16 @@ public class BeanScanner {
     private void removeReadyBeanContainerOfList(List<BeanContainer> notReadyBeanList) throws Exception {
         List<String> removeList = new ArrayList<>();
         for (BeanContainer beanContainer : notReadyBeanList) {
-            if (beanContainer.noDependencies() && beanContainer.beanInstance() == null) {
-                if (beanContainer.isMethodBean()) {
-                    Object[] args = Arrays.stream(((MethodBeanContainer) beanContainer).getParameterNames())
-                            .map(BeanContainerRepository::getBeanInstance)
-                            .toArray();
-                    beanContainer.initBeanInstance(args);
-                } else {
-                    beanContainer.initBeanInstance();
+            if (beanContainer.noDependencies()) {
+                if (beanContainer.beanInstance() == null) {
+                    if (beanContainer.isMethodBean()) {
+                        Object[] args = Arrays.stream(((MethodBeanContainer) beanContainer).getParameterNames())
+                                .map(BeanContainerRepository::getBeanInstance)
+                                .toArray();
+                        beanContainer.initBeanInstance(args);
+                    } else {
+                        beanContainer.initBeanInstance();
+                    }
                 }
                 removeList.add(beanContainer.name());
             }
