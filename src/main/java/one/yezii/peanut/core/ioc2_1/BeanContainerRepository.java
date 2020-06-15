@@ -28,4 +28,8 @@ public class BeanContainerRepository {
                 .filter(bc -> bc.beanInstance() == null || !bc.noDependencies())
                 .collect(Collectors.toList());
     }
+
+    public static Object getBeanInstance(String name) {
+        return getBeanContainer(name).beanInstance();
+    }
 }
