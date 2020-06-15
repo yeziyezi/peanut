@@ -26,6 +26,10 @@ public abstract class BeanContainer {
         dependencies.addAll(Arrays.asList(beanName));
     }
 
+    public Set<String> getDependencies() {
+        return dependencies;
+    }
+
     public boolean noDependencies() {
         return dependencies.isEmpty();
     }

@@ -3,6 +3,7 @@ package one.yezii.peanut.core.ioc2_1;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.MethodInfo;
+import io.github.classgraph.MethodParameterInfo;
 import one.yezii.peanut.core.annotation.Autowired;
 import one.yezii.peanut.core.annotation.Bean;
 import one.yezii.peanut.core.annotation.Component;
@@ -10,7 +11,7 @@ import one.yezii.peanut.core.annotation.DependOn;
 import one.yezii.peanut.core.bootloader.Peanut;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,18 +58,28 @@ public class BeanContainerFactory {
         BeanContainerRepository.checkBeanContainerExist(beanName);
         MethodBeanContainer beanContainer = new MethodBeanContainer(beanName);
         beanContainer.setConfigurationBeanName(configurationBeanName);
-        beanContainer.addDependencies(getDependenciesOfMethodInfo(methodInfo));
         beanContainer.setMethodInfo(methodInfo);
         beanContainer.setConfigurationBeanName(configurationBeanName);
+
+        List<String> parameterNames = getParameterNamesOfMethodInfo(methodInfo);
+        beanContainer.setParameterNames(parameterNames.toArray(String[]::new));
+
+        List<String> dependencies = getDependOnsOfMethodInfo(methodInfo);
+        dependencies.addAll(parameterNames);
+        beanContainer.addDependencies(dependencies.toArray(String[]::new));
+
         BeanContainerRepository.addBeanContainer(beanContainer);
     }
 
-    private String[] getDependenciesOfMethodInfo(MethodInfo methodInfo) {
-        if (!methodInfo.hasAnnotation(DependOn.class.getName())) {
-            return Collections.<String>emptyList().toArray(String[]::new);
-        }
-        return (String[]) (methodInfo.getAnnotationInfo(DependOn.class.getName())
-                .getParameterValues().getValue("value"));
+    private List<String> getParameterNamesOfMethodInfo(MethodInfo methodInfo) {
+        return Arrays.stream(methodInfo.getParameterInfo())
+                .map(MethodParameterInfo::getName)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getDependOnsOfMethodInfo(MethodInfo methodInfo) {
+        return Arrays.asList((String[]) (methodInfo.getAnnotationInfo(DependOn.class.getName())
+                .getParameterValues().getValue("value")));
     }
 
     private String[] getDependenciesOfClassInfo(ClassInfo classInfo) {
