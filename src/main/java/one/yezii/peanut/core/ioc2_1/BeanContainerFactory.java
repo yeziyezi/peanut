@@ -12,6 +12,7 @@ import one.yezii.peanut.core.bootloader.Peanut;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,6 +79,9 @@ public class BeanContainerFactory {
     }
 
     private List<String> getDependOnsOfMethodInfo(MethodInfo methodInfo) {
+        if (!methodInfo.hasAnnotation(DependOn.class.getName())) {
+            return Collections.emptyList();
+        }
         return Arrays.asList((String[]) (methodInfo.getAnnotationInfo(DependOn.class.getName())
                 .getParameterValues().getValue("value")));
     }
