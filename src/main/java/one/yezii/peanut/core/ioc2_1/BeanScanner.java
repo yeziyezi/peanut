@@ -3,12 +3,17 @@ package one.yezii.peanut.core.ioc2_1;
 import io.github.classgraph.ClassGraph;
 import one.yezii.peanut.core.annotation.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static one.yezii.peanut.core.util.LambdaExceptionWrapper.wrapVoid;
 
 public class BeanScanner {
     private BeanContainerFactory beanContainerFactory = new BeanContainerFactory();
+    private Logger logger = Logger.getLogger(BeanScanner.class.getName());
 
     public void scan() throws Exception {
         new ClassGraph().verbose(false).enableAllInfo()
@@ -19,8 +24,8 @@ public class BeanScanner {
         List<BeanContainer> notReadyBeanList = BeanContainerRepository.notReadyBeanList();
         int size = notReadyBeanList.size();
         while (size != 0) {
-            dealWithDependencies(notReadyBeanList);
-            notReadyBeanList = BeanContainerRepository.notReadyBeanList();
+            removeAndInjectDependencies(notReadyBeanList);
+            removeReadyBeanContainerOfList(notReadyBeanList);
             if (notReadyBeanList.size() == size) {
                 throw new RuntimeException("dependencies not found or circular dependencies!");
             }
@@ -28,12 +33,43 @@ public class BeanScanner {
         }
     }
 
-    private void dealWithDependencies(List<BeanContainer> notReadyBeanList) throws Exception {
-        //todo
+    private void removeAndInjectDependencies(List<BeanContainer> notReadyBeanList) throws NoSuchFieldException, IllegalAccessException {
+        List<String> notReadyBeanNames = notReadyBeanList.stream()
+                .map(BeanContainer::name).collect(Collectors.toList());
         for (BeanContainer beanContainer : notReadyBeanList) {
-            if (beanContainer.noDependencies() && beanContainer.beanInstance() == null) {
-                beanContainer.initBeanInstance();
+            for (String dependency : beanContainer.getDependencies()) {
+                if (!notReadyBeanNames.contains(dependency)) {
+                    //if componentBean,inject the field to bean instance
+                    if (beanContainer.isComponentBean()) {
+                        Object beanInstance = beanContainer.beanInstance();
+                        if (beanInstance != null) {
+                            beanInstance.getClass().getDeclaredField(dependency)
+                                    .set(beanContainer, BeanContainerRepository.getBeanInstance(dependency));
+                        } else {
+                            logger.warning("component bean [" + beanContainer.name() + "] has null bean instance.");
+                        }
+                    }
+                    beanContainer.removeDependency(dependency);
+                }
             }
         }
+    }
+
+    private void removeReadyBeanContainerOfList(List<BeanContainer> notReadyBeanList) throws Exception {
+        List<String> removeList = new ArrayList<>();
+        for (BeanContainer beanContainer : notReadyBeanList) {
+            if (beanContainer.noDependencies() && beanContainer.beanInstance() == null) {
+                if (beanContainer.isMethodBean()) {
+                    Object[] args = Arrays.stream(((MethodBeanContainer) beanContainer).getParameterNames())
+                            .map(BeanContainerRepository::getBeanInstance)
+                            .toArray();
+                    beanContainer.initBeanInstance(args);
+                } else {
+                    beanContainer.initBeanInstance();
+                }
+                removeList.add(beanContainer.name());
+            }
+        }
+        notReadyBeanList.removeIf(beanContainer -> removeList.contains(beanContainer.name()));
     }
 }
