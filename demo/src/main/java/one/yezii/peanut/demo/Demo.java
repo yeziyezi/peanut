@@ -1,19 +1,17 @@
 package one.yezii.peanut.demo;
 
-import one.yezii.peanut.core.ioc2.BeanScanner;
+import one.yezii.peanut.core.ioc2_1.BeanContainer;
+import one.yezii.peanut.core.ioc2_1.BeanContainerRepository;
+import one.yezii.peanut.core.ioc2_1.BeanScanner;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class Demo {
-    public static void main(String[] args) throws NoSuchFieldException, NoSuchMethodException {
-//        System.out.println(D.class.getDeclaredField("m").getGenericType().getTypeName());
-//        System.out.println(D.class.getDeclaredField("m").toGenericString());
-//        System.out.println(D.class.getDeclaredMethod("list").toGenericString());
-//        System.out.println(D.class.getDeclaredMethod("list").getGenericReturnType().getTypeName());
-        BeanScanner beanScanner = new BeanScanner();
-        System.out.println(beanScanner.scan(Demo.class.getPackageName()).result().toString());
+    public static void main(String[] args) throws Exception {
+        new BeanScanner().scan();
+        List<BeanContainer> list = BeanContainerRepository.all();
     }
 
     static class D {
