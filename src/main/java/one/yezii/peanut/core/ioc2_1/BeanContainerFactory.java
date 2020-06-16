@@ -11,10 +11,7 @@ import one.yezii.peanut.core.annotation.DependOn;
 import one.yezii.peanut.core.bootloader.Peanut;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BeanContainerFactory {
@@ -65,7 +62,7 @@ public class BeanContainerFactory {
         List<String> parameterNames = getParameterNamesOfMethodInfo(methodInfo);
         beanContainer.setParameterNames(parameterNames.toArray(String[]::new));
 
-        List<String> dependencies = getDependOnsOfMethodInfo(methodInfo);
+        List<String> dependencies = new ArrayList<>(getDependOnsOfMethodInfo(methodInfo));
         dependencies.addAll(parameterNames);
         beanContainer.addDependencies(dependencies.toArray(String[]::new));
 

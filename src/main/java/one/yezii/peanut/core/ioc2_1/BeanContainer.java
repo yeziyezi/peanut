@@ -34,8 +34,8 @@ public abstract class BeanContainer {
         return dependencies.isEmpty();
     }
 
-    public void removeDependency(String dependency) {
-        dependencies.remove(dependency);
+    public void removeDependency(String... dependency) {
+        dependencies.removeAll(Arrays.asList(dependency));
     }
 
     protected void injectBeanInstance(Object beanInstance) {
