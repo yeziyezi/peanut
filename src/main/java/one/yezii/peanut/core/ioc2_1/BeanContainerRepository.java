@@ -18,7 +18,7 @@ public class BeanContainerRepository {
     }
 
     public static void checkBeanContainerExist(String name) {
-        if (map.containsKey(name)) {
+        if (exist(name)) {
             throw new IllegalArgumentException("bean container [" + name + "] already exist");
         }
     }
@@ -36,5 +36,9 @@ public class BeanContainerRepository {
 
     public static List<BeanContainer> all() {
         return new ArrayList<>(map.values());
+    }
+
+    public static boolean exist(String name) {
+        return getBeanContainer(name) == null;
     }
 }

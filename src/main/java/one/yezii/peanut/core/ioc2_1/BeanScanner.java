@@ -14,6 +14,7 @@ import static one.yezii.peanut.core.util.LambdaExceptionWrapper.wrapVoid;
 public class BeanScanner {
     private BeanContainerFactory beanContainerFactory = new BeanContainerFactory();
     private Logger logger = Logger.getLogger(BeanScanner.class.getName());
+    private List<BeanContainer> notReadyBeanList;
 
     public void scan() throws Exception {
         new ClassGraph().verbose(false).enableAllInfo()
@@ -21,19 +22,33 @@ public class BeanScanner {
                 .getClassesWithAnnotation(Component.class.getName())
                 .filter(classInfo -> !classInfo.isAnnotation())
                 .forEach(wrapVoid(beanContainerFactory::initComponentBeanContainer));
-        List<BeanContainer> notReadyBeanList = BeanContainerRepository.notReadyBeanList();
+        notReadyBeanList = BeanContainerRepository.notReadyBeanList();
         int size = notReadyBeanList.size();
         while (size != 0) {
-            removeAndInjectDependencies(notReadyBeanList);
-            removeReadyBeanContainerOfList(notReadyBeanList);
+            removeAndInjectDependencies();
+            removeReadyBeanContainerOfList();
             if (notReadyBeanList.size() == size) {
-                throw new RuntimeException("dependencies not found or circular dependencies!");
+                checkInvalidDependencies();
             }
             size = notReadyBeanList.size();
         }
     }
 
-    private void removeAndInjectDependencies(List<BeanContainer> notReadyBeanList) throws NoSuchFieldException, IllegalAccessException {
+    private void checkInvalidDependencies() {
+        for (BeanContainer beanContainer : notReadyBeanList) {
+            for (String dependency : beanContainer.getDependencies()) {
+                if (!BeanContainerRepository.exist(dependency)) {
+                    throw new RuntimeException("dependency [" + dependency + "] " +
+                            "in [" + beanContainer.name() + "] not found!");
+                }
+            }
+        }
+        String circularDependencies = notReadyBeanList.stream().map(BeanContainer::name)
+                .collect(Collectors.joining(","));
+        throw new RuntimeException("maybe circular dependencies in [" + circularDependencies + "]");
+    }
+
+    private void removeAndInjectDependencies() throws NoSuchFieldException, IllegalAccessException {
         List<String> notReadyBeanNames = notReadyBeanList.stream()
                 .map(BeanContainer::name).collect(Collectors.toList());
         for (BeanContainer beanContainer : notReadyBeanList) {
@@ -51,7 +66,7 @@ public class BeanScanner {
         }
     }
 
-    private void removeReadyBeanContainerOfList(List<BeanContainer> notReadyBeanList) throws Exception {
+    private void removeReadyBeanContainerOfList() throws Exception {
         List<String> removeList = new ArrayList<>();
         for (BeanContainer beanContainer : notReadyBeanList) {
             if (beanContainer.noDependencies()) {
