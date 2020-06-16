@@ -38,7 +38,7 @@ public class BeanContainerFactory {
 
     public void initComponentBeanContainer(ClassInfo classInfo) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         String beanName = getBeanNameOfClassInfo(classInfo);
-        BeanContainerRepository.checkBeanContainerExist(beanName);
+        BeanContainerRepository.assertNotExist(beanName);
         ComponentBeanContainer beanContainer = new ComponentBeanContainer(beanName);
         beanContainer.addDependencies(getDependenciesOfClassInfo(classInfo));
         beanContainer.setClassInfo(classInfo);
@@ -53,7 +53,7 @@ public class BeanContainerFactory {
 
     private void initMethodBeanContainer(String configurationBeanName, MethodInfo methodInfo) {
         String beanName = getBeanNameOfMethodInfo(methodInfo);
-        BeanContainerRepository.checkBeanContainerExist(beanName);
+        BeanContainerRepository.assertNotExist(beanName);
         MethodBeanContainer beanContainer = new MethodBeanContainer(beanName);
         beanContainer.setConfigurationBeanName(configurationBeanName);
         beanContainer.setMethodInfo(methodInfo);

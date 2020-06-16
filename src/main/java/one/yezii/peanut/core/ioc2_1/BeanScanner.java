@@ -37,10 +37,7 @@ public class BeanScanner {
     private void checkInvalidDependencies() {
         for (BeanContainer beanContainer : notReadyBeanList) {
             for (String dependency : beanContainer.getDependencies()) {
-                if (!BeanContainerRepository.exist(dependency)) {
-                    throw new RuntimeException("dependency [" + dependency + "] " +
-                            "in [" + beanContainer.name() + "] not found!");
-                }
+                BeanContainerRepository.assertExist(dependency, beanContainer.name());
             }
         }
         String circularDependencies = notReadyBeanList.stream().map(BeanContainer::name)
@@ -73,6 +70,8 @@ public class BeanScanner {
                 if (beanContainer.beanInstance() == null) {
                     if (beanContainer.isMethodBean()) {
                         Object[] args = Arrays.stream(((MethodBeanContainer) beanContainer).getParameterNames())
+                                .filter(parameterName -> BeanContainerRepository
+                                        .assertExist(parameterName, beanContainer.name()))
                                 .map(BeanContainerRepository::getBeanInstance)
                                 .toArray();
                         beanContainer.initBeanInstance(args);

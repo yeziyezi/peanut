@@ -17,13 +17,21 @@ public class BeanContainerRepository {
         return map.get(name);
     }
 
-    public static void checkBeanContainerExist(String name) {
-        if (exist(name)) {
+    public static void assertNotExist(String name) {
+        if (map.containsKey(name)) {
             throw new IllegalArgumentException("bean container [" + name + "] already exist");
         }
     }
 
-    //get BeanContainer with null bean
+    public static boolean assertExist(String dependency, String selfContainer) {
+        if (!map.containsKey(dependency)) {
+            throw new IllegalStateException("dependency [" + dependency + "]  doesn't exist " +
+                    "in bean [" + selfContainer + "]");
+        }
+        return true;
+    }
+
+    //get BeanContainer with null bean or has dependencies
     public static List<BeanContainer> notReadyBeanList() {
         return map.values().stream()
                 .filter(bc -> bc.beanInstance() == null || !bc.noDependencies())
@@ -36,9 +44,5 @@ public class BeanContainerRepository {
 
     public static List<BeanContainer> all() {
         return new ArrayList<>(map.values());
-    }
-
-    public static boolean exist(String name) {
-        return getBeanContainer(name) == null;
     }
 }
