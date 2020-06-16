@@ -2,7 +2,9 @@ package one.yezii.peanut.core.ioc2_1;
 
 import io.github.classgraph.ClassInfo;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 public class ComponentBeanContainer extends BeanContainer {
     private ClassInfo classInfo;
@@ -35,4 +37,10 @@ public class ComponentBeanContainer extends BeanContainer {
         this.classInfo = classInfo;
     }
 
+    public void initField(String name) throws NoSuchFieldException, IllegalAccessException {
+        Objects.requireNonNull(beanInstance());
+        Field field = beanInstance().getClass().getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(beanInstance(), BeanContainerRepository.getBeanInstance(name));
+    }
 }

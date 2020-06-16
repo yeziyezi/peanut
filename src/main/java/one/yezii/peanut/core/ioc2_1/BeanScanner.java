@@ -3,7 +3,6 @@ package one.yezii.peanut.core.ioc2_1;
 import io.github.classgraph.ClassGraph;
 import one.yezii.peanut.core.annotation.Component;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,22 +37,17 @@ public class BeanScanner {
         List<String> notReadyBeanNames = notReadyBeanList.stream()
                 .map(BeanContainer::name).collect(Collectors.toList());
         for (BeanContainer beanContainer : notReadyBeanList) {
+            List<String> dependencyRemoveList = new ArrayList<>();
             for (String dependency : beanContainer.getDependencies()) {
                 if (!notReadyBeanNames.contains(dependency)) {
                     //if componentBean,inject the field to bean instance
                     if (beanContainer.isComponentBean()) {
-                        Object beanInstance = beanContainer.beanInstance();
-                        if (beanInstance != null) {
-                            Field field = beanInstance.getClass().getDeclaredField(dependency);
-                            field.setAccessible(true);
-                            field.set(beanInstance, BeanContainerRepository.getBeanInstance(dependency));
-                        } else {
-                            logger.warning("component bean [" + beanContainer.name() + "] has null bean instance.");
-                        }
+                        ((ComponentBeanContainer) beanContainer).initField(dependency);
                     }
-                    beanContainer.removeDependency(dependency);
+                    dependencyRemoveList.add(dependency);
                 }
             }
+            beanContainer.removeDependency(dependencyRemoveList.toArray(String[]::new));
         }
     }
 
