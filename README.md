@@ -1,4 +1,7 @@
 # README
+### update 20200621
+- replace ioc1 with ioc2.1
+- update demo code
 ### update 20200616
 - add @Bean parameter support (need to add -parameter in maven compiler args)
 - ioc 2.1 bug fixed
