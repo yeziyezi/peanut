@@ -1,17 +1,16 @@
 package one.yezii.peanut.demo;
 
-import one.yezii.peanut.core.ioc2_1.BeanContainer;
-import one.yezii.peanut.core.ioc2_1.BeanContainerRepository;
-import one.yezii.peanut.core.ioc2_1.BeanScanner;
+import one.yezii.peanut.core.annotation.PeanutBoot;
+import one.yezii.peanut.core.bootloader.Peanut;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@PeanutBoot
 public class Demo {
-    public static void main(String[] args) throws Exception {
-        new BeanScanner().scan();
-        List<BeanContainer> list = BeanContainerRepository.all();
+    public static void main(String[] args) {
+        Peanut.run(Demo.class);
     }
 
     static class D {

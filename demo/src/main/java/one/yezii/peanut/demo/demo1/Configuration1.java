@@ -22,9 +22,9 @@ public class Configuration1 {
 
     @DependOn({"map"})
     @Bean
-    public String a(List<String> list2) {
+    public String world(List<String> list2) {
         System.out.println(map.toString());
         System.out.println(list2.size());
-        return "";
+        return "world";
     }
 }
