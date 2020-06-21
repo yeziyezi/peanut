@@ -1,68 +1,80 @@
 package one.yezii.peanut.core.ioc;
 
-import java.util.ArrayList;
-import java.util.List;
+import one.yezii.peanut.core.annotation.Configuration;
+import one.yezii.peanut.core.annotation.Route;
+import one.yezii.peanut.core.annotation.Router;
+import one.yezii.peanut.core.facade.PeanutRunner;
 
-public class BeanContainer {
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+public abstract class BeanContainer {
+    private Set<String> dependencies = new HashSet<>();
+    private Object beanInstance;
     private String name;
-    private List<String> dependencies = new ArrayList<>();
-    private Object bean;
-    private Class<?> beanClass;
-    private List<String> interfaces = new ArrayList<>();
-    private List<String> annotations = new ArrayList<>();
 
-    private BeanContainer() {
+    public BeanContainer(String name) {
+        this.name = name;
     }
 
-    public static BeanContainer ofName(String name) {
-        BeanContainer bean = new BeanContainer();
-        bean.name = name;
-        return bean;
+    public String name() {
+        return name;
     }
 
-    public Class<?> getBeanClass() {
-        return beanClass;
+    public void addDependencies(String... beanName) {
+        dependencies.addAll(Arrays.asList(beanName));
     }
 
-    public BeanContainer setBeanClass(Class<?> beanClass) {
-        this.beanClass = beanClass;
-        return this;
-    }
-
-    public List<String> getInterfaces() {
-        return interfaces;
-    }
-
-    public List<String> getAnnotations() {
-        return annotations;
-    }
-
-    public BeanContainer addInterfaces(List<String> interfaces) {
-        this.interfaces.addAll(interfaces);
-        return this;
-    }
-
-    public BeanContainer addAnnotations(List<String> annotations) {
-        this.annotations.addAll(annotations);
-        return this;
-    }
-
-    public List<String> getDependencies() {
+    public Set<String> getDependencies() {
         return dependencies;
     }
 
-    public BeanContainer addDependencies(List<String> dependencies) {
-        this.dependencies.addAll(dependencies);
-        return this;
+    public boolean noDependencies() {
+        return dependencies.isEmpty();
     }
 
-    public BeanContainer injectBean(Object bean) {
-        this.bean = bean;
-        return this;
+    public void removeDependency(String... dependency) {
+        dependencies.removeAll(Arrays.asList(dependency));
     }
 
-    public Object getBean() {
-        return bean;
+    protected void injectBeanInstance(Object beanInstance) {
+        this.beanInstance = beanInstance;
     }
 
+    public abstract boolean hasAnnotation(Class<?> annotation);
+
+    public abstract boolean implementsInterface(Class<?> interfaceClass);
+
+    protected abstract void initBeanInstance(Object... args) throws Exception;
+
+    public boolean isPeanutRunner() {
+        return hasAnnotation(PeanutRunner.class);
+    }
+
+    public boolean isRouter() {
+        return !isMethodBean() && hasAnnotation(Router.class);
+    }
+
+    public boolean isRoute() {
+        return isMethodBean() && hasAnnotation(Route.class);
+    }
+
+    public boolean hasDependency(String dependency) {
+        return dependencies.contains(dependency);
+    }
+
+    public Object beanInstance() {
+        return beanInstance;
+    }
+
+    public abstract boolean isMethodBean();
+
+    public boolean isComponentBean() {
+        return !isMethodBean();
+    }
+
+    public boolean isConfiguration() {
+        return !isMethodBean() && hasAnnotation(Configuration.class);
+    }
 }

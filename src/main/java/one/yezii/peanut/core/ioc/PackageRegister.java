@@ -1,4 +1,4 @@
-package one.yezii.peanut.core.ioc2_1;
+package one.yezii.peanut.core.ioc;
 
 import java.util.ArrayList;
 import java.util.List;

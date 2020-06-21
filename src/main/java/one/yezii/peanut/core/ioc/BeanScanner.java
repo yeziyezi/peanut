@@ -1,4 +1,4 @@
-package one.yezii.peanut.core.ioc2_1;
+package one.yezii.peanut.core.ioc;
 
 import io.github.classgraph.ClassGraph;
 import one.yezii.peanut.core.annotation.Component;
@@ -32,6 +32,7 @@ public class BeanScanner {
             }
             size = notReadyBeanList.size();
         }
+        BeanContainerRepository.classify();
     }
 
     private void checkInvalidDependencies() {

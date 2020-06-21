@@ -1,6 +1,6 @@
 package one.yezii.peanut.core.http;
 
-import one.yezii.peanut.core.context.GlobalContext;
+import one.yezii.peanut.core.ioc.BeanRepository;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ public class MethodInvoker {
     }
 
     public Object invoke(Object... params) throws InvocationTargetException, IllegalAccessException {
-        return method.invoke(GlobalContext.beans.get(beanName), params);
+        return method.invoke(BeanRepository.beans.get(beanName), params);
     }
 
     public Method method() {

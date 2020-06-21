@@ -2,7 +2,6 @@ package one.yezii.peanut.core.http.route;
 
 import one.yezii.peanut.core.util.CommonMap;
 
-import java.util.Collections;
 import java.util.Objects;
 
 public class UriRoute {
@@ -44,7 +43,7 @@ public class UriRoute {
     private CommonMap getUriParam(String uri) {
         int questionMarkIndex = uri.indexOf("?");
         if (questionMarkIndex < 0) {
-            return (CommonMap) Collections.<String, Object>emptyMap();
+            return CommonMap.emptyMap;
         }
         CommonMap map = new CommonMap();
         String sub = uri.substring(questionMarkIndex + 1);

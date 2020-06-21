@@ -16,17 +16,17 @@ import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static one.yezii.peanut.core.context.GlobalContext.routeMap;
+import static one.yezii.peanut.core.ioc.BeanRepository.routes;
 
 public class RequestHandler {
 
     public FullHttpResponse handle(FullHttpRequest request) {
         UriRoute uriRoute = UriRoute.of(request.uri(), request.method().name());
-        if (!routeMap.containsKey(uriRoute)) {
+        if (!routes.containsKey(uriRoute)) {
             return notFound();
         }
         try {
-            MethodInvoker methodInvoker = routeMap.get(uriRoute);
+            MethodInvoker methodInvoker = routes.get(uriRoute);
             //todo: add resolver of request body and fill result in map
             CommonMap requestParamMap = uriRoute.uriParam();
             HttpHeaders headers = request.headers();

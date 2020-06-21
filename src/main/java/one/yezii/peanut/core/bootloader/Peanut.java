@@ -3,10 +3,10 @@ package one.yezii.peanut.core.bootloader;
 import one.yezii.peanut.core.annotation.PeanutBoot;
 import one.yezii.peanut.core.configuration.HttpServerConfiguration;
 import one.yezii.peanut.core.configuration.PropertiesLoader;
-import one.yezii.peanut.core.context.GlobalContext;
 import one.yezii.peanut.core.http.server.HttpServer;
-import one.yezii.peanut.core.ioc.BeanManager;
-import one.yezii.peanut.core.ioc2_1.PackageRegister;
+import one.yezii.peanut.core.ioc.BeanRepository;
+import one.yezii.peanut.core.ioc.BeanScanner;
+import one.yezii.peanut.core.ioc.PackageRegister;
 
 import java.util.logging.Logger;
 
@@ -22,23 +22,23 @@ public class Peanut {
         }
     }
 
-    private <T> void boot(Class<T> bootClass) throws Exception {
+    private <T> void boot(Class<T> startClass) throws Exception {
         String bootloaderPackageName = Peanut.class.getPackageName();
         String corePackage = bootloaderPackageName.substring(bootloaderPackageName.lastIndexOf("."));
         PackageRegister.register(corePackage);
         PropertiesLoader.load();
-        getClasses(bootClass);
-        GlobalContext.runners.forEach((k, v) -> v.run());
+        scanBeans(startClass);
+        BeanRepository.runners.forEach((k, v) -> v.run());
         startHttpServer();
         logger.info("Peanut Application started.");
     }
 
-    private <T> void getClasses(Class<T> bootClass) {
-        if (!bootClass.isAnnotationPresent(PeanutBoot.class)) {
-            throw new RuntimeException("boot class '" + bootClass.getName() + "' without @PeanutBoot annotation");
+    private <T> void scanBeans(Class<T> startClass) throws Exception {
+        if (!startClass.isAnnotationPresent(PeanutBoot.class)) {
+            throw new RuntimeException("boot class '" + startClass.getName() + "' without @PeanutBoot annotation");
         }
-        PackageRegister.register(bootClass.getPackageName());
-        new BeanManager().initBeans(bootClass.getPackageName());
+        PackageRegister.register(startClass.getPackageName());
+        new BeanScanner().scan();
     }
 
     private void startHttpServer() throws InterruptedException {

@@ -1,4 +1,6 @@
-package one.yezii.peanut.core.ioc2_1;
+package one.yezii.peanut.core.ioc;
+
+import one.yezii.peanut.core.ioc.classifier.Classifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ public class BeanContainerRepository {
         return true;
     }
 
-    //get BeanContainer with null bean or has dependencies
+    //get BeanContainer with null bean or need dependencies
     public static List<BeanContainer> notReadyBeanList() {
         return map.values().stream()
                 .filter(bc -> bc.beanInstance() == null || !bc.noDependencies())
@@ -44,5 +46,11 @@ public class BeanContainerRepository {
 
     public static List<BeanContainer> all() {
         return new ArrayList<>(map.values());
+    }
+
+    // After scan,all the work for bean container completed.
+    // Now it's time to classify the beans
+    public static void classify() {
+        Classifier.doClassify(all());
     }
 }

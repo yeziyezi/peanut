@@ -1,4 +1,4 @@
-package one.yezii.peanut.core.ioc2_1;
+package one.yezii.peanut.core.ioc;
 
 import io.github.classgraph.MethodInfo;
 
@@ -20,7 +20,7 @@ public class MethodBeanContainer extends BeanContainer {
 
     @Override
     public boolean implementsInterface(Class<?> interfaceClass) {
-        throw new IllegalCallerException("methodBean doesn't support [implementsInterface] call");
+        return false;
     }
 
     public String[] getParameterNames() {
