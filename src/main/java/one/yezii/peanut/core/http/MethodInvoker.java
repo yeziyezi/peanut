@@ -1,5 +1,8 @@
 package one.yezii.peanut.core.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import one.yezii.peanut.core.annotation.Json;
+import one.yezii.peanut.core.bean.UtilBeans;
 import one.yezii.peanut.core.ioc.BeanRepository;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,8 +23,15 @@ public class MethodInvoker {
         return invoker;
     }
 
-    public Object invoke(Object... params) throws InvocationTargetException, IllegalAccessException {
-        return method.invoke(BeanRepository.beans.get(beanName), params);
+    public Object invoke(Object... params) throws InvocationTargetException, IllegalAccessException, JsonProcessingException {
+        Object result = method.invoke(BeanRepository.beans.get(beanName), params);
+        if (result == null) {
+            return null;
+        }
+        if (method.isAnnotationPresent(Json.class)) {
+            return UtilBeans.objectMapper.writeValueAsString(result);
+        }
+        return result;
     }
 
     public Method method() {

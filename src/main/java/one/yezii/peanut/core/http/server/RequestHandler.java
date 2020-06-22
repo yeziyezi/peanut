@@ -65,7 +65,7 @@ public class RequestHandler {
 
     private FullHttpResponse response(HttpResponseStatus status, String content) {
         return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
-                ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT, CharBuffer.wrap(content),
+                ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT, CharBuffer.wrap(content == null ? "" : content),
                         UTF_8));
     }
 

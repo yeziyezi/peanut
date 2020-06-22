@@ -1,5 +1,7 @@
 package one.yezii.peanut.core.http.paramparsing;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import one.yezii.peanut.core.annotation.Json;
 import one.yezii.peanut.core.util.CommonMap;
 
 import java.lang.reflect.Parameter;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static one.yezii.peanut.core.bean.UtilBeans.objectMapper;
+import static one.yezii.peanut.core.util.LambdaExceptionWrapper.wrapVoid;
 
 public class RequestParamParser {
     private static Map<Class<?>, StringObjectParser> basicParserMap = new HashMap<>();
@@ -43,7 +46,14 @@ public class RequestParamParser {
     }
 
 
-    private Object parse(Parameter parameter) {
+    private Object parse(Parameter parameter) throws JsonProcessingException {
+        if (parameter.isAnnotationPresent(Json.class)) {
+            Object json = requestParams.get("@json");
+            if (json == null) {
+                return null;
+            }
+            return objectMapper.readValue(json.toString(), parameter.getType());
+        }
         String valueString = Optional.ofNullable(requestParams.get(parameter.getName()))
                 .map(Object::toString).orElse(null);
         StringObjectParser parser = basicParserMap.get(parameter.getType());
@@ -60,7 +70,8 @@ public class RequestParamParser {
 
     public ParameterObjectMapping parse() {
         ParameterObjectMapping mapping = new ParameterObjectMapping();
-        Arrays.stream(routeParams).forEach(parameter -> mapping.add(parameter, parse(parameter)));
+        Arrays.stream(routeParams).forEach(wrapVoid(
+                parameter -> mapping.add(parameter, parse(parameter))));
         return mapping;
     }
 
