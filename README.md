@@ -1,4 +1,6 @@
-# README
+# Update records
+### update 20200622
+- add json request and response support
 ### update 20200621
 - replace ioc1 with ioc2.1
 - update demo code
