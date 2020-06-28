@@ -12,6 +12,15 @@ import java.lang.reflect.Parameter;
 public class MethodInvoker {
     private Method method;
     private String beanName;
+    private boolean isJsonResponse = false;
+
+    public boolean isJsonResponse() {
+        return isJsonResponse;
+    }
+
+    public void setJsonResponse() {
+        isJsonResponse = true;
+    }
 
     private MethodInvoker() {
     }

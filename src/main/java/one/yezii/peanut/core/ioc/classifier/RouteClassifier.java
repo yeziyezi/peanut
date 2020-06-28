@@ -1,5 +1,6 @@
 package one.yezii.peanut.core.ioc.classifier;
 
+import one.yezii.peanut.core.annotation.Json;
 import one.yezii.peanut.core.annotation.Route;
 import one.yezii.peanut.core.annotation.Router;
 import one.yezii.peanut.core.constant.HttpMethod;
@@ -32,15 +33,20 @@ public class RouteClassifier implements Classifier<UriRoute, MethodInvoker> {
         Map<UriRoute, MethodInvoker> routeMap = new HashMap<>();
         routerMap.forEach((routerName, bean) -> {
             String prefix = getPrefixRoute(bean);
+            boolean routerReturnJson = bean.getClass().isAnnotationPresent(Json.class);
             Arrays.stream(bean.getClass().getMethods())
                     .filter(method -> method.isAnnotationPresent(Route.class))
                     .filter(method -> method.canAccess(bean))//non-public method will not register in routeMap
                     .forEach(method -> {
                         Route route = method.getDeclaredAnnotation(Route.class);
                         MethodInvoker methodInvoker = MethodInvoker.of(method, routerName);
+                        boolean routeReturnJson = routerReturnJson || method.isAnnotationPresent(Json.class);
                         for (HttpMethod httpMethod : route.method()) {
                             UriRoute uriRoute = UriRoute.of(getFullRoute(prefix, route.value()), httpMethod.toString());
                             checkUriRouteAlreadyExist(routeMap, uriRoute);
+                            if (routeReturnJson) {
+                                methodInvoker.setJsonResponse();
+                            }
                             routeMap.put(uriRoute, methodInvoker);
                         }
                     });

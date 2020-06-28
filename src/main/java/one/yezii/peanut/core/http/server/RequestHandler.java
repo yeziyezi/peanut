@@ -1,5 +1,7 @@
 package one.yezii.peanut.core.http.server;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.*;
@@ -15,7 +17,9 @@ import java.util.HashMap;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static one.yezii.peanut.core.bean.UtilBeans.objectMapper;
 import static one.yezii.peanut.core.ioc.BeanRepository.routes;
 
 public class RequestHandler {
@@ -37,12 +41,17 @@ public class RequestHandler {
             ParameterObjectMapping poMapping = RequestParamParser.of(
                     methodInvoker.parameters(), requestParamMap).parse();
             Object result = methodInvoker.invoke(poMapping.toArray());
+            if (methodInvoker.isJsonResponse()) {
+                return jsonResponse(result);
+            }
             return ok(result == null ? null : result.toString());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return badRequest();
         } catch (Exception e) {
             e.printStackTrace();
+            Throwable throwable = e.getCause();
+            if (throwable instanceof IllegalArgumentException
+                    || throwable instanceof InvalidFormatException) {
+                return badRequest();
+            }
             return internalServerError();
         }
     }
@@ -64,9 +73,17 @@ public class RequestHandler {
     }
 
     private FullHttpResponse response(HttpResponseStatus status, String content) {
-        return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
+        return new DefaultFullHttpResponse(HTTP_1_1, status,
                 ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT, CharBuffer.wrap(content == null ? "" : content),
                         UTF_8));
+    }
+
+    private FullHttpResponse jsonResponse(Object content) {
+        ByteBuf byteBuf = ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT,
+                CharBuffer.wrap(objectMapper.convertValue(content, String.class)), UTF_8);
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, byteBuf);
+        response.headers().set(CONTENT_TYPE, APPLICATION_JSON);
+        return response;
     }
 
     static class MyMap extends HashMap<String, Object> {
