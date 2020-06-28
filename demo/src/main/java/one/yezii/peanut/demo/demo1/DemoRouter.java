@@ -7,6 +7,7 @@ import one.yezii.peanut.core.annotation.Router;
 import one.yezii.peanut.core.util.CommonMap;
 
 @Router("demo")
+@Json
 public class DemoRouter {
     @Autowired
     private String world;
@@ -16,9 +17,20 @@ public class DemoRouter {
         return "hello, " + world;
     }
 
+    @Route("hello")
+    public String hello(int a) {
+        return "hello, " + a;
+    }
+
     @Route("json")
     @Json
     public CommonMap json(@Json CommonMap commonMap) {
         return commonMap;
+    }
+
+    @Route("student")
+    @Json
+    public Student student(@Json Student student) {
+        return student;
     }
 }
