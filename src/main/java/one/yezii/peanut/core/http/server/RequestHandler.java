@@ -1,5 +1,6 @@
 package one.yezii.peanut.core.http.server;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -32,6 +33,7 @@ public class RequestHandler {
         try {
             MethodInvoker methodInvoker = routes.get(uriRoute);
             //todo: add resolver of request body and fill result in map
+            //remember do url decode on x-www-form-urlencoded request content
             CommonMap requestParamMap = uriRoute.uriParam();
             HttpHeaders headers = request.headers();
             // if application/json
@@ -78,9 +80,9 @@ public class RequestHandler {
                         UTF_8));
     }
 
-    private FullHttpResponse jsonResponse(Object content) {
+    private FullHttpResponse jsonResponse(Object content) throws JsonProcessingException {
         ByteBuf byteBuf = ByteBufUtil.encodeString(ByteBufAllocator.DEFAULT,
-                CharBuffer.wrap(objectMapper.convertValue(content, String.class)), UTF_8);
+                CharBuffer.wrap(objectMapper.writeValueAsString(content)), UTF_8);
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, byteBuf);
         response.headers().set(CONTENT_TYPE, APPLICATION_JSON);
         return response;

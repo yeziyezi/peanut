@@ -2,7 +2,10 @@ package one.yezii.peanut.core.http.route;
 
 import one.yezii.peanut.core.util.CommonMap;
 
+import java.net.URLDecoder;
 import java.util.Objects;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class UriRoute {
     private String routeUri;
@@ -52,7 +55,7 @@ public class UriRoute {
             if (equalIndex < 0) {
                 continue;
             }
-            map.put(split.substring(0, equalIndex), split.substring(equalIndex + 1));
+            map.put(split.substring(0, equalIndex), URLDecoder.decode(split.substring(equalIndex + 1), UTF_8));
         }
         return map;
     }

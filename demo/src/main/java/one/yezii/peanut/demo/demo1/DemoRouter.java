@@ -23,14 +23,17 @@ public class DemoRouter {
     }
 
     @Route("json")
-    @Json
     public CommonMap json(@Json CommonMap commonMap) {
         return commonMap;
     }
 
     @Route("student")
-    @Json
     public Student student(@Json Student student) {
+        return student;
+    }
+
+    @Route("studentC")
+    public Student studentComplexParser(Student student) {
         return student;
     }
 }
