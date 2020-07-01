@@ -5,12 +5,15 @@ import one.yezii.peanut.core.annotation.Json;
 import one.yezii.peanut.core.annotation.Route;
 import one.yezii.peanut.core.annotation.Router;
 import one.yezii.peanut.core.util.CommonMap;
+import one.yezii.peanut.demo2.TestComponent;
 
 @Router("demo")
 @Json
 public class DemoRouter {
     @Autowired
     private String world;
+    @Autowired
+    private TestComponent testComponent;
 
     @Route
     public String hello() {

@@ -52,7 +52,8 @@ public class BeanScanner {
         for (BeanContainer beanContainer : notReadyBeanList) {
             List<String> dependencyRemoveList = new ArrayList<>();
             for (String dependency : beanContainer.getDependencies()) {
-                if (!notReadyBeanNames.contains(dependency)) {
+                if (!notReadyBeanNames.contains(dependency)
+                        && BeanContainerRepository.assertExist(dependency, beanContainer.name())) {
                     //if componentBean,inject the field to bean instance
                     if (beanContainer.isComponentBean()) {
                         ((ComponentBeanContainer) beanContainer).initField(dependency);
