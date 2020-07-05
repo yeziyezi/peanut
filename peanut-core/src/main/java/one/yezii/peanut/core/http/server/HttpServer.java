@@ -12,8 +12,8 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import java.util.logging.Logger;
 
 public class HttpServer {
-    private int port;
     private static Logger logger = Logger.getLogger(HttpServer.class.toGenericString());
+    private int port;
 
     public HttpServer listen(int port) {
         this.port = port;

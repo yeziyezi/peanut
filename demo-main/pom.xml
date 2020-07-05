@@ -4,7 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>one.yezii.peanut.demo</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>demo-main</artifactId>
+    <name>demo-main</name>
     <version>0.0.2-alpha</version>
     <properties>
         <java.version>11</java.version>

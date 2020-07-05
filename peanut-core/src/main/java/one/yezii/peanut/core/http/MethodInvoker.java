@@ -14,14 +14,6 @@ public class MethodInvoker {
     private String beanName;
     private boolean isJsonResponse = false;
 
-    public boolean isJsonResponse() {
-        return isJsonResponse;
-    }
-
-    public void setJsonResponse() {
-        isJsonResponse = true;
-    }
-
     private MethodInvoker() {
     }
 
@@ -30,6 +22,14 @@ public class MethodInvoker {
         invoker.method = method;
         invoker.beanName = beanName;
         return invoker;
+    }
+
+    public boolean isJsonResponse() {
+        return isJsonResponse;
+    }
+
+    public void setJsonResponse() {
+        isJsonResponse = true;
     }
 
     public Object invoke(Object... params) throws InvocationTargetException, IllegalAccessException, JsonProcessingException {
