@@ -21,6 +21,11 @@
             <artifactId>peanut-core</artifactId>
             <version>0.0.2-alpha</version>
         </dependency>
+        <dependency>
+            <groupId>one.yezii.peanut.demo</groupId>
+            <artifactId>demo-extend</artifactId>
+            <version>0.0.2-alpha</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

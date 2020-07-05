@@ -1,10 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>peanut-all</artifactId>
+    <packaging>pom</packaging>
     <groupId>one.yezii.peanut</groupId>
     <version>0.0.2-alpha</version>
     <modules>
         <module>peanut-core</module>
         <module>demo-main</module>
+        <module>demo-extend</module>
     </modules>
 </project>
