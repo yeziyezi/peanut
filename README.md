@@ -1,4 +1,8 @@
 # Update records
+### update 20200706
+- add extend package scan support by SPI and method Peanut#register
+- adjust project struct and simplify core code
+- update version to 0.0.3-alpha
 ### update 20200628
 - add json response support
 ### update 20200622
