@@ -3,10 +3,24 @@
     <artifactId>peanut-all</artifactId>
     <packaging>pom</packaging>
     <groupId>one.yezii.peanut</groupId>
-    <version>0.0.2-alpha</version>
+    <version>0.0.3-alpha</version>
     <modules>
         <module>peanut-core</module>
         <module>demo-main</module>
         <module>demo-extend</module>
     </modules>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>one.yezii.peanut</groupId>
+                <artifactId>peanut-core</artifactId>
+                <version>0.0.3-alpha</version>
+            </dependency>
+            <dependency>
+                <groupId>one.yezii.peanut.demo</groupId>
+                <artifactId>demo-extend</artifactId>
+                <version>0.0.3-alpha</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

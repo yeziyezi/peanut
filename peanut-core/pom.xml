@@ -6,7 +6,7 @@
 
     <groupId>one.yezii.peanut</groupId>
     <artifactId>peanut-core</artifactId>
-    <version>0.0.2-alpha</version>
+    <version>0.0.3-alpha</version>
     <packaging>jar</packaging>
     <name>peanut-core</name>
     <description>A nano java web framework</description>
