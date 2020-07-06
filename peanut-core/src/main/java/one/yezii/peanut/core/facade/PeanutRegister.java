@@ -9,4 +9,7 @@ package one.yezii.peanut.core.facade;
  */
 
 public interface PeanutRegister {
+    default String packageName() {
+        return this.getClass().getPackageName();
+    }
 }

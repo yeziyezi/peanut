@@ -16,9 +16,9 @@ public class BeanScanner {
     private Logger logger = Logger.getLogger(BeanScanner.class.getName());
     private List<BeanContainer> notReadyBeanList;
 
-    public void scan() throws Exception {
+    public void scan(String[] scanList) throws Exception {
         new ClassGraph().verbose(false).enableAllInfo()
-                .whitelistPackages(PackageRegister.list()).scan()
+                .whitelistPackages(scanList).scan()
                 .getClassesWithAnnotation(Component.class.getName())
                 .filter(classInfo -> !classInfo.isAnnotation())
                 .forEach(wrapVoid(beanContainerFactory::initComponentBeanContainer));
