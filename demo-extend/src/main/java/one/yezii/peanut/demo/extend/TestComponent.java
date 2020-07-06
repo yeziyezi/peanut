@@ -1,4 +1,4 @@
-package one.yezii.peanut.demo2;
+package one.yezii.peanut.demo.extend;
 
 import one.yezii.peanut.core.annotation.Component;
 

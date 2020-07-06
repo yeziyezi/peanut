@@ -2,11 +2,15 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>peanut-all</artifactId>
+        <groupId>one.yezii.peanut</groupId>
+        <version>0.0.3-alpha</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>one.yezii.peanut.demo</groupId>
     <artifactId>demo-extend</artifactId>
     <name>demo-extend</name>
-    <version>0.0.2-alpha</version>
     <properties>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
@@ -19,7 +23,6 @@
         <dependency>
             <groupId>one.yezii.peanut</groupId>
             <artifactId>peanut-core</artifactId>
-            <version>0.0.2-alpha</version>
         </dependency>
     </dependencies>
 </project>

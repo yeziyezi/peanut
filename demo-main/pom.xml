@@ -3,10 +3,14 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>peanut-all</artifactId>
+        <groupId>one.yezii.peanut</groupId>
+        <version>0.0.3-alpha</version>
+    </parent>
     <groupId>one.yezii.peanut.demo</groupId>
     <artifactId>demo-main</artifactId>
     <name>demo-main</name>
-    <version>0.0.2-alpha</version>
     <properties>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
@@ -19,12 +23,10 @@
         <dependency>
             <groupId>one.yezii.peanut</groupId>
             <artifactId>peanut-core</artifactId>
-            <version>0.0.2-alpha</version>
         </dependency>
         <dependency>
             <groupId>one.yezii.peanut.demo</groupId>
             <artifactId>demo-extend</artifactId>
-            <version>0.0.2-alpha</version>
         </dependency>
     </dependencies>
     <build>

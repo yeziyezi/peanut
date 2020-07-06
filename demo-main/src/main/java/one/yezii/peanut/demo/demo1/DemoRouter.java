@@ -5,7 +5,7 @@ import one.yezii.peanut.core.annotation.Json;
 import one.yezii.peanut.core.annotation.Route;
 import one.yezii.peanut.core.annotation.Router;
 import one.yezii.peanut.core.util.CommonMap;
-import one.yezii.peanut.demo2.TestComponent;
+import one.yezii.peanut.demo.extend.TestComponent;
 
 @Router("demo")
 @Json

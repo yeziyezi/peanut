@@ -10,6 +10,7 @@ import java.util.List;
 public class Configuration2 {
     @Bean
     public List<String> list2() {
+        System.out.println(Configuration2.class.getName() + "#list2");
         return Collections.emptyList();
     }
 }
