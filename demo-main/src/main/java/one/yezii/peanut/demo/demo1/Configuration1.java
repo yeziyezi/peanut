@@ -6,7 +6,6 @@ import one.yezii.peanut.core.annotation.Configuration;
 import one.yezii.peanut.core.annotation.DependOn;
 
 import java.util.HashMap;
-import java.util.List;
 
 @Configuration
 public class Configuration1 {
@@ -22,9 +21,8 @@ public class Configuration1 {
 
     @DependOn({"map"})
     @Bean
-    public String world(List<String> list2) {
+    public String world() {
         System.out.println(map.toString());
-        System.out.println(list2.size());
         return "world";
     }
 }
